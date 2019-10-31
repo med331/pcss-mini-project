@@ -32,7 +32,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="Server.cbp" />
+		<Unit filename="Server.layout" />
+		<Unit filename="client_interface.cpp" />
+		<Unit filename="game_logic.cpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="session_management.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

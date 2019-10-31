@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1572440339 source:d:\data\pcss\src\server\client_interface.cpp
+
+1572440339 source:d:\data\pcss\src\server\session_management.cpp
+
+1572525499 source:d:\data\pcss\src\server\game_logic.cpp
+	<iostream>
+
+1572525804 source:d:\data\pcss\src\server\main.cpp
+	<iostream>
+	"game_logic.cpp"
+
+1572541740 d:\data\pcss\src\server\game_logic.cpp
+	<iostream>
+
