@@ -1,2 +1,3 @@
-class ConnectionManager(){
-private GameState currentGamestate=new GameState()}
+//class ConnectionManager(){
+//private GameState currentGamestate=new GameState()
+//}

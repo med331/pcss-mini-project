@@ -7,6 +7,7 @@ using namespace std;
 
 int main()
 {
-    cout << "Hello world!" << endl;
+    game_logic object;
+    object.updateGame();
     return 0;
 }
