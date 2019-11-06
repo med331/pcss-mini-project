@@ -1,7 +1,7 @@
 //class ConnectionManager(){
 //private GameState currentGamestate=new GameState()
-//}
-class ConnectionManager {
+//
+/* class ConnectionManager {
     private GameState Game;
 
     public void Unsubscribe (ConnectionThread connectionThread) {}
@@ -15,4 +15,4 @@ class ConnectionThread {
     private string PlayerID;
     private ConnectionManager Manager;
     public void EndThread () {}
-}
+} */

@@ -8,6 +8,9 @@ class game_logic {
 
 public :
 
+    int maxPlayers = 4;
+    int playersInGame = 0;
+
 	void updateGame(){
 		//Call functions based to update the game
 		genDeck();
@@ -19,18 +22,18 @@ public :
 		for(int i=0;i<=51;i++){
             //cout << cardDeck[i] << endl;
 		}
-    drawHouse();
-    drawHouse();
-    drawHouse();
-    drawHouse();
-    drawHouse();
-    hit();
-    hit();
-    hit();
-    compare();
-	}
 
+    bool makeMove(int playerID, bool action){
+        return false;
+    }
 
+    bool addPlayer(int playerID){
+        return false;
+    }
+
+    bool removePlayer(int playerID){
+        return false;
+    }
 private :
 
     int pHand = 0;
