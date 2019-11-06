@@ -22,6 +22,7 @@ public :
 		for(int i=0;i<=51;i++){
             //cout << cardDeck[i] << endl;
 		}
+	}
 
     bool makeMove(int playerID, bool action){
         return false;
@@ -34,15 +35,16 @@ public :
     bool removePlayer(int playerID){
         return false;
     }
+
 private :
 
-    int pHand = 0;
+    int pHand[4];
     int dHand = 0;
     int cardCounter = 0;
 	int activePlayer;//probably need to make a player class that can store some info
     int cardDeck[52];
     int deckSize;
-    bool playerBust;
+    bool playerBust[4];
     bool dealerBust;
     void genDeck() {
         int b = 1;
@@ -61,16 +63,16 @@ private :
     }
 
     void shuffleDeck() {
-        std::random_shuffle(cardDeck, cardDeck + 52);
+        random_shuffle(cardDeck, cardDeck + 52);
     }
 
 	void deal() {
 
 	}
 
-    void hit() {
-        if (!playerBust && !dealerBust) {
-            pHand = pHand + cardDeck[cardCounter];
+    void hit(int playerID) {
+        if (!playerBust[playerID] && !dealerBust) {
+            pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
             cout << "Player now has: " << pHand << endl;
             cardCounter++;
         }
@@ -78,13 +80,13 @@ private :
             cout << "Disable hitting in this situation since the game is over" << endl;
         }
 
-        if (pHand > 21){
-            playerBust = true;
+        if (pHand[playerID] > 21){
+            playerBust[playerID] = true;
             cout << "You can't hit anymore (use this shit to disable the hit option)" << endl;
         }
 	}
 
-	void stand() {
+	void stand(int playerID) {
 
 	}
 
@@ -117,32 +119,32 @@ private :
         }
 	}
 
-	void compare() {
-	    if (!playerBust && !dealerBust){
-            if (pHand > dHand){
-                cout << "Player wins" << endl;
+	void compare(int playerID) {
+	    if (!playerBust[playerID] && !dealerBust){
+            if (pHand[playerID] > dHand){
+                cout << "Player " << playerID << " wins" << endl;
             }
-            else if (pHand < dHand){
+            else if (pHand[playerID] < dHand){
                 cout << "Dealer wins" << endl;
             }
-            else if (pHand = dHand){
+            else if (pHand[playerID] = dHand){
                 cout << "It's a tie" << endl;
             }
         }
-        else if (playerBust){
-            cout << "Player busted" << endl;
+        else if (playerBust[playerID]){
+            cout << "Player " << playerID << " busted" << endl;
 
         }
         else if (dealerBust){
-            cout << "Dealer busted, player wins" << endl;
+            cout << "Dealer busted, " << "Player " << playerID << " wins" << endl;
         }
-        reset();
+        reset(playerID);
 	}
 
-	void reset() {
-	    pHand = 0;
+	void reset(int playerID) {
+	    pHand[playerID] = 0;
         dHand = 0;
-        playerBust = 0;
+        playerBust[playerID] = 0;
         dealerBust = 0;
 	}
 
