@@ -15,7 +15,6 @@ public :
 		for(int i=0;i<=51;i++){
             //cout << cardDeck[i] << endl;
 		}
-		cout << "SECOND SHUFFLE" << endl;
 		shuffleDeck();
 		for(int i=0;i<=51;i++){
             //cout << cardDeck[i] << endl;
@@ -67,12 +66,16 @@ private :
 	}
 
     void hit() {
-        if (!playerBust) {
+        if (!playerBust && !dealerBust) {
             pHand = pHand + cardDeck[cardCounter];
             cout << "Player now has: " << pHand << endl;
             cardCounter++;
         }
-        else if (pHand > 21){
+        else if (dealerBust){
+            cout << "Disable hitting in this situation since the game is over" << endl;
+        }
+
+        if (pHand > 21){
             playerBust = true;
             cout << "You can't hit anymore (use this shit to disable the hit option)" << endl;
         }
@@ -105,7 +108,7 @@ private :
             else
                 cout << "House can't draw anymore (This shit will be used to stop the dealer from drawing more once they reach 17)" << endl;
         }
-        else if (dHand > 21){
+        if (dHand > 21){
             dealerBust = true;
             cout << "You can't hit anymore (use this shit to disable the hit option)" << endl;
         }
@@ -125,10 +128,23 @@ private :
         }
         else if (playerBust){
             cout << "Player busted" << endl;
+
         }
         else if (dealerBust){
-            cout << "Dealer busted" << endl;
+            cout << "Dealer busted, player wins" << endl;
         }
+        reset();
+	}
+
+	void reset() {
+	    pHand = 0;
+        dHand = 0;
+        playerBust = 0;
+        dealerBust = 0;
+	}
+
+	void bust_check(int hand){
+
 	}
 
 };
