@@ -6,47 +6,57 @@
 #include <iostream>
 
 using namespace std;
-
+//thread object class
 class ConnectionThread {
-private:
-    string playerID;
+private: //variables
+    int playerID;
 public:
 
-    void operator() () const {
+    void operator() () const { //the function used by the threads
         cout<<"hi"<<endl;
     }
-    void EndThread () {}
-    string GetPlayerID() {
+    void EndThread () {} //Ends the current thread
+    int GetPlayerID() { //getters and setters for playerId
         return playerID;
     }
-    void SetPlayerID(string _playerID) {
+    void SetPlayerID(int _playerID) {
         playerID=_playerID;
     }
 };
 
-class GameState {};
+class GameState {}; //temporary while it is being created in game logic
 
-class ConnectionManager {
+class ConnectionManager { //Adds and removes players and manages their actions
 private:
-    GameState game;
-    ConnectionThread connectionArray[4];
-    thread threadArray[4];
+    GameState game; //State of the game
+    ConnectionThread connectionArray[4]; //Array of connections
+    thread threadArray[4]; //Array of threads
 
 
 public:
-    ConnectionManager() {
+    ConnectionManager() { //Constructor
         for(int i=0;i<4;i++) {
-            connectionArray[i].SetPlayerID(to_string(i));
+            connectionArray[i].SetPlayerID(i);
         }
     }
 
-    void Unsubscribe (string playerID) {}
-    bool MakeMove (string playerID, string Move) {return true;}
+    void Unsubscribe (int playerID) {
+        game.removePlayer(playerID);
+        connectionArray[playerID].EndThread();
+    } //Removes players
+
+    bool MakeMove (int playerID, bool Move) { //Handles player actions
+        return game.makeMove(playerID, Move);
+    }
+
+    //Setters and getters for gameState
     void SetGame (GameState gameInput) {game=gameInput;}
     GameState GetGame () {return game;}
-    void Subscribe (string playerID) {
-        threadArray[stoi(playerID)]=thread(connectionArray[stoi(playerID)]);
-        threadArray[stoi(playerID)].join();
+
+    void Subscribe (int playerID) { //Adds players
+        game.addPlayer(playerID);
+        threadArray[playerID]=thread(connectionArray[playerID]);
+        threadArray[playerID].join();
     }
     //void UpdateConnections () {}
 };
