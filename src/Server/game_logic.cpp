@@ -29,15 +29,39 @@ public :
     }
 
     bool addPlayer(int playerID){
-        return false;
+        if(playersInGame != maxPlayers){
+                playersInGame++;
+                vector<int>::iterator it;
+                int ser = playerID;
+                it = find(vec.begin(), vec.end(), ser);
+                if (it != vec.end())
+                {
+                    cout << "Element " << ser << " found at position : ";
+                    cout << it - vec.begin() + 1 << "\n";
+                    vec.at(it - vec.begin() + 1) = playerID;
+                    cout << "now " << vec.at(it - vec.begin() + 1);
+                }
+                else
+                    cout << "Element not found.\n\n";
+                }
     }
-
     bool removePlayer(int playerID){
-        return false;
+        vector<int>::iterator it;
+        int ser = playerID;
+        it = find(vec.begin(), vec.end(), ser);
+        if (it != vec.end())
+        {
+            cout << "Element " << ser << " found at position : ";
+            cout << it - vec.begin() + 1 << "\n";
+            vec.at(it - vec.begin() + 1) = 0;
+            cout << "now " << vec.at(it - vec.begin() + 1);
+        }
+        else
+            cout << "Element not found.\n\n";
     }
 
 private :
-
+    vector<int> vec{ 0, 0, 0, 0};
     int pHand[4];
     int dHand = 0;
     int cardCounter = 0;
