@@ -143,31 +143,37 @@ private :
         }
 	}
 
-	string compare(int playerID) {
-	    if (!playerBust[playerID] && !dealerBust) {
-            if (pHand[playerID] > dHand) {
-                return "Player wins - player " + playerID;
+	string compare() {
+	    for (int i=0; i<4; i++) {
+            if (vec.at(i) != 0){
+                if (!playerBust[i] && !dealerBust) {
+                    if (pHand[i] > dHand) {
+                        return "Player wins - player " + i;
+                    }
+                    else if (pHand[i] < dHand) {
+                        return "Dealer wins";
+                    }
+                    else if (pHand[i] == dHand) {
+                        return "It's a tie";
+                    }
+                }
+                else if (playerBust[i]) {
+                    return "Player busted - player " + i;
+                }
+                else if (dealerBust) {
+                    return "Dealer busted, player wins - player " + i;
+                }
             }
-            else if (pHand[playerID] < dHand) {
-                return "Dealer wins";
-            }
-            else if (pHand[playerID] == dHand) {
-                return "It's a tie";
-            }
+            reset();
         }
-        else if (playerBust[playerID]) {
-            return "Player busted - player " + playerID;
-        }
-        else if (dealerBust) {
-            return "Dealer busted, player wins - player " + playerID;
-        }
-        reset(playerID);
 	}
 
-	void reset(int playerID) {
-	    pHand[playerID] = 0;
+	void reset() {
+	    for (int i=1; i<5; i++) {
+            pHand[i] = 0;
+            playerBust[i] = 0;
+	    }
         dHand = 0;
-        playerBust[playerID] = 0;
         dealerBust = 0;
 	}
 };
