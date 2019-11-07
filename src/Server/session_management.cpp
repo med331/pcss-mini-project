@@ -2,33 +2,51 @@
 //private GameState currentGamestate=new GameState()
 //
 #include <thread>
+#include <string>
+#include <iostream>
 
-class ConnectionManager {
-    private GameState game;
-    private ConnectionThread[] threads
-
-    ConnectionManager() {
-        this.game=new GameState();
-    }
-    public void Unsubscribe (string playerID) {}
-    public bool MakeMove (string playerID, string Move) {}
-    private void Subscribe (string playerID) {}
-    private void UpdateConnections () {}
-    public void SetGame (GameState gameInput) {this.game=gameInput;}
-    public GameState GetGame () {return this.game;}
-}
+using namespace std;
 
 class ConnectionThread {
-    private string playerID;
-    private ConnectionManager manager;
+private:
+    string playerID;
+public:
 
-    ConnectionThread(string playerID, ConnectionManager manager) {
-        this.playerID=playerID;
-        this.manager=manager;
+    void operator() () const {
+        cout<<"hi"<<endl;
+    }
+    void EndThread () {}
+    string GetPlayerID() {
+        return playerID;
+    }
+    void SetPlayerID(string _playerID) {
+        playerID=_playerID;
+    }
+};
+
+class GameState {};
+
+class ConnectionManager {
+private:
+    GameState game;
+    ConnectionThread connectionArray[4];
+    thread threadArray[4];
+
+
+public:
+    ConnectionManager() {
+        for(int i=0;i<4;i++) {
+            connectionArray[i].SetPlayerID(to_string(i));
+        }
     }
 
-    public void operator() () const {
-
+    void Unsubscribe (string playerID) {}
+    bool MakeMove (string playerID, string Move) {return true;}
+    void SetGame (GameState gameInput) {game=gameInput;}
+    GameState GetGame () {return game;}
+    void Subscribe (string playerID) {
+        threadArray[stoi(playerID)]=thread(connectionArray[stoi(playerID)]);
+        threadArray[stoi(playerID)].join();
     }
-    public void EndThread () {}
-}
+    //void UpdateConnections () {}
+};
