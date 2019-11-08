@@ -11,33 +11,63 @@ public :
     int maxPlayers = 4;
     int playersInGame = 0;
 
-	void updateGame(){
+	void updateGame() {
 		//Call functions based to update the game
 		genDeck();
 		shuffleDeck();
-		for(int i=0;i<=51;i++){
+		for(int i=0;i<=51;i++) {
             //cout << cardDeck[i] << endl;
 		}
 		shuffleDeck();
-		for(int i=0;i<=51;i++){
+		for(int i=0;i<=51;i++) {
             //cout << cardDeck[i] << endl;
 		}
 	}
 
-    bool makeMove(int playerID, bool action){
-        return false;
+    string makeMove(int playerID, bool action){
+        if (playerID == activePlayer) {
+            if (action == 0) {
+                stand(playerID);
+            }
+            else hit(playerID);
+        }
+        return "";
     }
 
     bool addPlayer(int playerID){
-        return false;
+        if(playersInGame != maxPlayers){
+                playersInGame++;
+                vector<int>::iterator it;
+                int ser = playerID;
+                it = find(vec.begin(), vec.end(), ser);
+                if (it != vec.end())
+                {
+                    cout << "Element " << ser << " found at position : ";
+                    cout << it - vec.begin() + 1 << "\n";
+                    vec.at(it - vec.begin() + 1) = playerID;
+                    cout << "now " << vec.at(it - vec.begin() + 1);
+                }
+                else
+                    cout << "Element not found.\n\n";
+                }
     }
-
     bool removePlayer(int playerID){
-        return false;
+        vector<int>::iterator it;
+        int ser = playerID;
+        it = find(vec.begin(), vec.end(), ser);
+        if (it != vec.end())
+        {
+            cout << "Element " << ser << " found at position : ";
+            cout << it - vec.begin() + 1 << "\n";
+            vec.at(it - vec.begin() + 1) = 0;
+            cout << "now " << vec.at(it - vec.begin() + 1);
+        }
+        else
+            cout << "Element not found.\n\n";
     }
 
 private :
-
+    vector<int> vec{ 0, 0, 0, 0};
     int pHand[4];
     int dHand = 0;
     int cardCounter = 0;
@@ -46,15 +76,16 @@ private :
     int deckSize;
     bool playerBust[4];
     bool dealerBust;
+
     void genDeck() {
         int b = 1;
         int j = 0;
-        for(int i=0;i<=51;i++){
-            if(j == 4){
+        for(int i=0;i<=51;i++) {
+            if(j == 4) {
                 b++;
                 j = 0;
             }
-            if(b > 10){
+            if(b > 10) {
                 b = 10;
             }
             cardDeck[i] = b;
@@ -66,31 +97,24 @@ private :
         random_shuffle(cardDeck, cardDeck + 52);
     }
 
-	void deal() {
-
-	}
-
-    void hit(int playerID) {
+    string hit(int playerID) {
         if (!playerBust[playerID] && !dealerBust) {
             pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
-            cout << "Player now has: " << pHand << endl;
+            cout << "Player now has: " << pHand[playerID] << endl;
             cardCounter++;
+            return "Player now has" + pHand[playerID];
         }
-        else if (dealerBust){
-            cout << "Disable hitting in this situation since the game is over" << endl;
+        else if (dealerBust) {
+            return "Disable hitting in this situation since the game is over";
         }
 
-        if (pHand[playerID] > 21){
+        if (pHand[playerID] > 21) {
             playerBust[playerID] = true;
-            cout << "You can't hit anymore (use this shit to disable the hit option)" << endl;
+            return "You can't hit anymore (use this shit to disable the hit option)";
         }
 	}
 
 	void stand(int playerID) {
-
-	}
-
-	void getHand() {
 
 	}
 
@@ -103,53 +127,53 @@ private :
         }
 	}
 
-	void drawHouse() {
+	string drawHouse() {
         if (!dealerBust) {
-            if (!houseStands()){
+            if (!houseStands()) {
                 dHand = dHand + cardDeck[cardCounter];
-                cout << "Dealer now has: " << dHand << endl;
+                return "Dealer now has: " + dHand;
                 cardCounter++;
             }
             else
-                cout << "House can't draw anymore (This shit will be used to stop the dealer from drawing more once they reach 17)" << endl;
+                return "House can't draw anymore (This shit will be used to stop the dealer from drawing more once they reach 17)";
         }
-        if (dHand > 21){
+        if (dHand > 21) {
             dealerBust = true;
-            cout << "You can't hit anymore (use this shit to disable the hit option)" << endl;
+            return "You can't hit anymore (use this shit to disable the hit option)";
         }
 	}
 
-	void compare(int playerID) {
-	    if (!playerBust[playerID] && !dealerBust){
-            if (pHand[playerID] > dHand){
-                cout << "Player " << playerID << " wins" << endl;
+	string compare() {
+	    for (int i=0; i<4; i++) {
+            if (vec.at(i) != 0){
+                if (!playerBust[i] && !dealerBust) {
+                    if (pHand[i] > dHand) {
+                        return "Player wins - player " + i;
+                    }
+                    else if (pHand[i] < dHand) {
+                        return "Dealer wins";
+                    }
+                    else if (pHand[i] == dHand) {
+                        return "It's a tie";
+                    }
+                }
+                else if (playerBust[i]) {
+                    return "Player busted - player " + i;
+                }
+                else if (dealerBust) {
+                    return "Dealer busted, player wins - player " + i;
+                }
             }
-            else if (pHand[playerID] < dHand){
-                cout << "Dealer wins" << endl;
-            }
-            else if (pHand[playerID] = dHand){
-                cout << "It's a tie" << endl;
-            }
+            reset();
         }
-        else if (playerBust[playerID]){
-            cout << "Player " << playerID << " busted" << endl;
-
-        }
-        else if (dealerBust){
-            cout << "Dealer busted, " << "Player " << playerID << " wins" << endl;
-        }
-        reset(playerID);
 	}
 
-	void reset(int playerID) {
-	    pHand[playerID] = 0;
+	void reset() {
+	    for (int i=1; i<5; i++) {
+            pHand[i] = 0;
+            playerBust[i] = 0;
+	    }
         dHand = 0;
-        playerBust[playerID] = 0;
         dealerBust = 0;
 	}
-
-	void bust_check(int hand){
-
-	}
-
 };

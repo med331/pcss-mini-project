@@ -15,7 +15,7 @@
 
 1573031810 source:c:\users\mihai\desktop\aau\3rd semester\pcss\pcss-mini-project\src\server\client_interface.cpp
 
-1572861818 source:c:\users\mihai\desktop\aau\3rd semester\pcss\pcss-mini-project\src\server\game_logic.cpp
+1573119165 source:c:\users\mihai\desktop\aau\3rd semester\pcss\pcss-mini-project\src\server\game_logic.cpp
 	<iostream>
 	<stdlib.h>
 	<algorithm>
@@ -24,10 +24,32 @@
 	<iostream>
 	"game_logic.cpp"
 
-1573034542 c:\users\mihai\desktop\aau\3rd semester\pcss\pcss-mini-project\src\server\game_logic.cpp
+1573119165 c:\users\mihai\desktop\aau\3rd semester\pcss\pcss-mini-project\src\server\game_logic.cpp
 	<iostream>
 	<stdlib.h>
 	<algorithm>
 
 1573032936 source:c:\users\mihai\desktop\aau\3rd semester\pcss\pcss-mini-project\src\server\session_management.cpp
+
+1572514963 source:c:\users\tanja\music\programs\medialogy\p3\pcss-mini\pcss-mini-project\src\server\client_interface.cpp
+
+1573130779 source:c:\users\tanja\music\programs\medialogy\p3\pcss-mini\pcss-mini-project\src\server\game_logic.cpp
+	<iostream>
+	<stdlib.h>
+	<algorithm>
+
+1573130779 source:c:\users\tanja\music\programs\medialogy\p3\pcss-mini\pcss-mini-project\src\server\main.cpp
+	<iostream>
+	"game_logic.cpp"
+	"session_management.cpp"
+
+1573130779 c:\users\tanja\music\programs\medialogy\p3\pcss-mini\pcss-mini-project\src\server\game_logic.cpp
+	<iostream>
+	<stdlib.h>
+	<algorithm>
+
+1573140382 c:\users\tanja\music\programs\medialogy\p3\pcss-mini\pcss-mini-project\src\server\session_management.cpp
+	<thread>
+	<string>
+	<iostream>
 
