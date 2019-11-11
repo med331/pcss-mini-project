@@ -32,8 +32,9 @@
 *.app
 
 
-# Created by https://www.gitignore.io/api/c++,codeblocks,visualstudio
-# Edit at https://www.gitignore.io/?templates=c++,codeblocks,visualstudio
+
+# Created by https://www.gitignore.io/api/c++,codeblocks,visualstudio,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=c++,codeblocks,visualstudio,visualstudiocode
 
 ### C++ ###
 # Prerequisites
@@ -76,6 +77,17 @@
 # generated directories
 bin/
 obj/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -426,4 +438,4 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
-# End of https://www.gitignore.io/api/c++,codeblocks,visualstudio
+# End of https://www.gitignore.io/api/c++,codeblocks,visualstudio,visualstudiocode
