@@ -5,12 +5,14 @@ using namespace std;
 #include <vector>
 #include "game_logic.cpp"
 
+
+
 bool PlayerHit() {
-	cout << "Do you wish to Hit or Stand?" << endl;
+	cout << "Do Hit or Stand?" << endl;
 	string input;
 	cin >> input;
 
-	if (input == "Hit") {
+	if (input == "Hit" || input == "hit") {
 		return true;
 	}
 	else {
@@ -20,14 +22,17 @@ bool PlayerHit() {
 
 int main()
 {
+	int player = 0;
 	game_logic game;
 	game.addPlayer(1);
 	game.addPlayer(2);
 	game.updateGame();
-	game.deal(0);
-	while (game.standing==true) {
+	game.deal();
+	while (true) {
 		bool s = PlayerHit();
-		game.makeMove(0, s);
+		game.makeMove(player, s);
+		player = game.getActivePlayer();
+
 	}
 	return 0;
 }

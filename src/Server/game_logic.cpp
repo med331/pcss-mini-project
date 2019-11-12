@@ -9,13 +9,21 @@ using namespace std;
 class game_logic {
 
 public:
+
 	bool standing = true;
 	int maxPlayers = 4;
 	int playersInGame = 0;
 
-	string deal(int playerID) {
-		hit(playerID);
-		hit(playerID);
+	int getActivePlayer() {
+		return activePlayer;
+	}
+
+	
+	string deal() {
+		for (int i = 0; i <=4; i++) {
+			hit(i);
+			hit(i);
+		}
 		drawHouse();
 		return "";
 	}
@@ -40,6 +48,10 @@ public:
 				return stand(playerID);
 			}
 			else return hit(playerID);
+		}
+		else {
+			cout << "it's not your turn";
+			return  "it's not your turn";
 		}
 		return "";
 	}
@@ -91,12 +103,13 @@ private:
 	int pHand[4];
 	int dHand = 0;
 	int cardCounter = 0;
-	int activePlayer = vec.at(0);//probably need to make a player class that can store some info
+	int activePlayer = vec.at(0);
 	int cardDeck[52];
 	int deckSize;
 	bool playerBust[4];
 	bool dealerBust = false;
 
+	
 	void genDeck() {
 		int b = 1;
 		int j = 0;
@@ -113,18 +126,27 @@ private:
 		}
 	}
 
-	void nextPlayer() {
+	string nextPlayer() {
 		if (activePlayer == 0) {
-			for (int i = 0; activePlayer > 0; i++) {
+			for (int i = 0; activePlayer < 0; i++) {
 				activePlayer = vec.at(i);
+				cout << "Next player" << activePlayer << endl;
+				cout << "Player has: " << pHand[activePlayer] << endl;
+				return "Next player";
 			}
 		}
-		else if (activePlayer > 4) {
-			compare();
+		if (activePlayer >= 3) {
+			doHouse();
+			cout << "round finished house turn" << endl;
+			return "Next player";
 		}
 		else {
 			activePlayer++;
+			cout << "Next player" << activePlayer << endl;
+			cout << "Player has: " << pHand[activePlayer] << endl;
+			return "Next player";
 		}
+		
 	}
 
 	void shuffleDeck() {
@@ -133,32 +155,28 @@ private:
 	}
 
 	string hit(int playerID) {
-		cout << playerBust[playerID];
-		pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
-		cardCounter++;
-		cout << pHand[playerID] << "\n";
-		cout << playerBust[playerID] << "\n";
-
-		if (pHand[playerID] > 21) {
-			playerBust[playerID] = true;
-			cout << pHand[playerID] << "\n";
-			cout << "You can't hit anymore (use this shit to disable the hit option)";
-			stand(playerID);
-			return "You can't hit anymore (use this shit to disable the hit option)";
-		}
-		else if (!playerBust[playerID] && !dealerBust) {
-			cout << "Player now has: " << pHand[playerID] << endl;
-			return "Player now has" + pHand[playerID];
-		}
-		else if (dealerBust) {
-			return "Disable hitting in this situation since the game is over";
-		}
+			pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
+			cardCounter++;
+			if (pHand[playerID] > 21) {
+				playerBust[playerID] = true;
+				cout << pHand[playerID] << "\n";
+				cout << "You can't hit anymore (use this shit to disable the hit option)";
+				stand(playerID);
+				return "You can't hit anymore (use this shit to disable the hit option)";
+			}
+			else if (!playerBust[playerID] && !dealerBust) {
+				cout << "Player now has: " << pHand[playerID] << endl;
+				return "Player now has" + pHand[playerID];
+			}
+			else if (dealerBust) {
+				return "Disable hitting in this situation since the game is over";
+			}
 	}
 
 	string stand(int playerID) {
-		cout << "Player is standing with " << pHand[playerID];
+		cout << "Player is standing with " << pHand[playerID] << endl;
 		standing = false;
-		doHouse();
+		nextPlayer();
 		return "Player is standing with " + pHand[playerID];
 	}
 
