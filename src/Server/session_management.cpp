@@ -9,8 +9,7 @@
 #include <thread>
 #include <string>
 #include <iostream>
-#include <sys/types.h>
-#include <winsock2.h>
+//#include <sys/types.h>
 
 #include <windows.h>
 #include <winsock2.h>
@@ -19,9 +18,10 @@
 #include <stdio.h>
 
 #define DEFAULT_BUFLEN 512
-#define DEFAULT_PORT "27015"
+#define DEFAULT_PORT "80"
 #define BACKLOG 10
 
+#include "game_logic.h"
 
 
 using namespace std;
@@ -32,8 +32,6 @@ private: //variables
     int playerID;
 
 public:
-
-
 
     void operator() () const { //the function used by the threads
         cout<<"hi"<<endl;
@@ -47,14 +45,16 @@ public:
     }
 };
 
-class GameState {}; //temporary while it is being created in game logic
-
 class ConnectionManager { //Adds and removes players and manages their actions
+
+public:
+    static const int maxPlayers=1;
+
 private:
 
-    GameState game; //State of the game
-    ConnectionThread connectionArray[4]; //Array of connections
-    thread threadArray[4]; //Array of threads
+    static const game_logic game; //State of the game
+    ConnectionThread connectionArray[maxPlayers]; //Array of connections
+    thread threadArray[maxPlayers]; //Array of threads
     /*int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int opt = 1;
@@ -63,28 +63,30 @@ private:
     char *hello = "Hello from server";*/
     WSADATA wsaData;
     int iResult;
+    int bytesReceived;
 
-    SOCKET ListenSocket = -1;
-    SOCKET ClientSocket = -1;
+    SOCKET ListenSocket=-1 ;
+    SOCKET ClientSocket=-1 ;
 
     struct addrinfo *result = NULL;
     struct addrinfo hints;
 
-    int iSendResult;
-    char recvbuf[DEFAULT_BUFLEN];
-    int recvbuflen = DEFAULT_BUFLEN;
+    //int iSendResult;
+    char hitOrStandInput[DEFAULT_BUFLEN];
+    int inputLength = DEFAULT_BUFLEN;
 
 public:
     ConnectionManager() { //Constructor
-        for(int i=0;i<4;i++) {
+        ServerSetup();
+        for(int i=0;i<maxPlayers;i++) {
             connectionArray[i].SetPlayerID(i);
-            ServerSetup();
+
         }
     }
 
     int ServerSetup()
     {
-        iResult =
+        //iResult =
         WSAStartup(MAKEWORD(2,2), &wsaData);
 
         ZeroMemory(&hints, sizeof(hints));
@@ -92,47 +94,51 @@ public:
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_flags = AI_PASSIVE;
 
-        iResult =
+        //iResult =
         getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
 
         ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
-        iResult =
+        //iResult =
         bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
 
         freeaddrinfo(result);
 
-        iResult = listen(ListenSocket, BACKLOG);
+        //iResult =
+        listen(ListenSocket, BACKLOG);
 
         ClientSocket = accept(ListenSocket, NULL, NULL);
-        closesocket(ListenSocket);
+        //closesocket(ListenSocket);
 
-        do {
-            iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
-            if (iResult > 0) {
-                printf("Bytes received: %d\n", iResult);
-                printf("Message received: %s\n", recvbuf);
+        //iResult =
+        //shutdown(ClientSocket, 1);
 
-                iSendResult = send( ClientSocket, recvbuf, iResult, 0 );
-                printf("Bytes sent: %d\n", iSendResult);
-            }
-            else if (iResult == 0)
-                printf("Connection closing...\n");
-        } while (iResult>0);
-
-        iResult = shutdown(ClientSocket, 1);
-
-        closesocket(ClientSocket);
-        WSACleanup();
     }
 
-    /*int ServerUpdate() {
-        valread = read( new_socket , buffer, 1024);
-        printf("%s\n",buffer );
-        send(new_socket , hello , strlen(hello) , 0 );
-        printf("Hello message sent\n");
-        return 0;
-    }*/
+    void ServerUpdate() {
+        bytesReceived = recv(ClientSocket, hitOrStandInput, inputLength, 0);
+        //if (bytesReceived > 0) {
+            /*printf("Bytes received: %d\n", iResult);
+            printf("Message received: %s\n", recvbuf);
+            iSendResult = send( ClientSocket, recvbuf, iResult, 0 );
+            printf("Bytes sent: %d\n", iSendResult);*/
+            const char* output="death";
+            if(hitOrStandInput=="Hit") {
+                //output=game.makeMove(0,true);
+            } else {
+                //output=game.makeMove(0,false);
+            }
+            cout<<bytesReceived<<endl;
+            int byteSend=send(ClientSocket,output,strlen(output),0);
+            cout<<byteSend<<endl;
+
+            cout<<hitOrStandInput<<endl;
+        /*}
+        else if (bytesReceived == 0)
+            //printf("Connection closing...\n");
+            */closesocket(ClientSocket);
+
+    }
 
     void Unsubscribe (int playerID) {
         //game.removePlayer(playerID);
@@ -144,8 +150,8 @@ public:
     }*/
 
     //Setters and getters for gameState
-    void SetGame (GameState gameInput) {game=gameInput;}
-    GameState GetGame () {return game;}
+    /*void SetGame (GameState gameInput) {game=gameInput;}
+    GameState GetGame () {return game;}*/
 
     void Subscribe (int playerID) { //Adds players
         //game.addPlayer(playerID);
@@ -153,4 +159,8 @@ public:
         threadArray[playerID].join();
     }
     //void UpdateConnections () {}
+
+    void ServerClose() {
+        WSACleanup();
+    }
 };
