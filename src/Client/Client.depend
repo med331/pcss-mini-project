@@ -2,7 +2,10 @@
 1572439013 source:e:\medialogy\p3\programming\jackblack\pcss-mini-project\src\client\main.cpp
 	<iostream>
 
-1573474672 source:c:\users\una's pc\documents\!universitet\3. semester\programming of complex software systems\mini project\pcss-mini-project\src\client\main.cpp
+1573735475 source:c:\users\una's pc\documents\!universitet\3. semester\programming of complex software systems\mini project\pcss-mini-project\src\client\main.cpp
+	"server_interface.cpp"
+
+1573735679 c:\users\una's pc\documents\!universitet\3. semester\programming of complex software systems\mini project\pcss-mini-project\src\client\server_interface.cpp
 	<windows.h>
 	<winsock2.h>
 	<ws2tcpip.h>
