@@ -6,11 +6,14 @@
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "80"
 
 #define DEFAULT_ADDRESS "172.20.10.2"
+
+/*using namespace std;*/
 
 class ServerInterface
 {
@@ -20,7 +23,7 @@ class ServerInterface
         struct addrinfo *result = NULL,
                         *ptr = NULL,
                         hints;
-        const char *sendbuf = "Hello, Network!";
+        /*const char *sendbuf = "Hello, Network!";*/
         char recvbuf[DEFAULT_BUFLEN];
         int iResult;
         int recvbuflen = DEFAULT_BUFLEN;
@@ -59,28 +62,54 @@ class ServerInterface
             freeaddrinfo(result);
         };
 
-        void sendToServer()
+        void sendToServer(const char *message)
         {
-            iResult = send( ConnectSocket, sendbuf, (int)strlen(sendbuf), 0 );
+            iResult = send( ConnectSocket, message, (int)strlen(message), 0 );
             printf("Bytes Sent: %d\n", iResult);
-
-            iResult = shutdown(ConnectSocket, 1);
+            /* REMEMBER to add check for message sent */
         };
 
-        void recieveFromServer()
+        /* The message sent to the server when client joins */
+        void sendConnectMessage()
+        {
+            const char *sendbuf = "Client wants to join :)";
+            sendToServer(sendbuf);
+        };
+
+        /* Actions the client makes, sent to server */
+        void sendAction(bool action)
+        {
+            if (action) {
+                const char *sendbuf = "Hit";
+                sendToServer(sendbuf);
+            }
+            else {
+                const char *sendbuf = "Stand";
+                sendToServer(sendbuf);
+            }
+        }
+
+        std::string recieveFromServer()
         {
             do {
+
                 iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-                if ( iResult > 0 ){
-                    printf("Bytes received: %d\n", iResult);
-                    printf("Message received: %s\n", recvbuf);
-                }
+                if ( iResult > 0 )
+                    /* printf("Bytes received: %d\n", iResult); */
+                    return "data received"; /* change this */
                 else if ( iResult == 0 )
                     printf("Connection closed\n");
+                else
+                    printf("recv failed with error: %d\n", WSAGetLastError());
 
             } while( iResult > 0 );
+            return "";
+        };
 
+        void closeConnection()
+        {
+            iResult = shutdown(ConnectSocket, 1);
             closesocket(ConnectSocket);
             WSACleanup();
-        };
+        }
 };
