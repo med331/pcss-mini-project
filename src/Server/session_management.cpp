@@ -26,13 +26,13 @@
 
 using namespace std;
 //thread object class
-
 //bool doSendMessage = false;
 //SOCKET ListenSocket = -1;
 
 class ConnectionThread {
 private: //variables
 
+    struct addrinfo *resultCopy;
     int playerID;
     bool playerConnected=false;
     bool isListening=false;
@@ -41,8 +41,19 @@ private: //variables
     SOCKET ClientSocket=-1;
 
 public:
+    void setResultCopy (struct addrinfo *resultInfo) {resultCopy=resultInfo;}
+    void operator() () { //the function used by the threads
 
-    void operator() () const { //the function used by the threads
+        try {ListenSocket = socket(resultCopy->ai_family, resultCopy->ai_socktype, resultCopy->ai_protocol);
+
+        bind( ListenSocket, resultCopy->ai_addr, (int)resultCopy->ai_addrlen);
+
+        freeaddrinfo(const_cast<struct addrinfo*>(resultCopy));
+
+        listen(ListenSocket, BACKLOG);
+
+        ClientSocket = accept(ListenSocket, NULL, NULL);} catch (const std::invalid_argument& e) {printf("problem");}
+
     }
     void EndThread () {} //Ends the current thread
 
@@ -53,6 +64,7 @@ public:
     }
 
     void ListenSocketReset() {
+        closesocket(ListenSocket);
     }
 
     int GetPlayerID() { //getters and setters for playerId
@@ -98,7 +110,7 @@ private:
     int bytesReceived;
 
     //SOCKET ListenSocket=-1;
-    SOCKET ClientSocket[maxPlayers];
+    //SOCKET ClientSocket[maxPlayers];
 
     struct addrinfo *result = NULL;
     struct addrinfo hints;
@@ -109,11 +121,11 @@ private:
 
 public:
     ConnectionManager() { //Constructor
-        ServerSetup();
         for(int i=0;i<maxPlayers;i++) {
             connectionArray[i].SetPlayerID(i);
 
         }
+        ServerSetup();
     }
 
     int ServerSetup()
@@ -126,21 +138,8 @@ public:
         hints.ai_flags = AI_PASSIVE;
 
         getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-
-        /*ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-
-        bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
-
-        freeaddrinfo(result);
-
-        listen(ListenSocket, BACKLOG);
-
-        ClientSocket[game.getActivePlayer()] = accept(ListenSocket, NULL, NULL);
-        closesocket(ListenSocket);*/
-
-        //iResult =
-        //shutdown(ClientSocket, 1);
-
+        connectionArray[0].setResultCopy(result);
+        try { threadArray [0].detach();} catch (const std::invalid_argument& e) {printf("problem");}
     }
 
     void ServerUpdate() {
@@ -148,7 +147,7 @@ public:
         send( connectionArray[game.getActivePlayer()].GetClientSocket(), "It is your turn", 15, 0 );
         //Take input from current player
 
-        bytesReceived = recv(ClientSocket[game.getActivePlayer()], hitOrStandInput, inputLength, 0);
+        bytesReceived = recv(connectionArray[game.getActivePlayer()].GetClientSocket(), hitOrStandInput, inputLength, 0);
         if (bytesReceived > 0) {
             /*printf("Bytes received: %d\n", iResult);
             printf("Message received: %s\n", recvbuf);
