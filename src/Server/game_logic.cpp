@@ -18,28 +18,27 @@ public:
 		return activePlayer;
 	}
 
-	
+	//update needs to deal only to spots that are filled
 	string deal() {
-		for (int i = 0; i <=4; i++) {
-			hit(i);
-			hit(i);
+		for (int i = 0; i <=3; i++) {
+			if (vec.at(i) != 9) {
+				hit(i);
+				hit(i);
+			}
+			else {
+				cout << "skipped" << i;
+			}
 		}
-		drawHouse();
+		dHand = 0 + cardDeck[cardCounter];
+		cardCounter++;
+		cout << "Dealer now has:: " << dHand << endl;
 		return "";
 	}
-
+	
 	void updateGame() {
 		//Call functions based to update the game
 		genDeck();
-			shuffleDeck();
-					for (int i = 0; i <= 51; i++) {
-						//cout << cardDeck[i] << endl;
-					}
-					shuffleDeck();
-					for (int i = 0; i <= 51; i++) {
-						//cout << cardDeck[i] << endl;
-					}
-		
+		shuffleDeck();
 	}
 
 	string makeMove(int playerID, bool action) {
@@ -60,7 +59,7 @@ public:
 		if (playersInGame != maxPlayers) {
 			playersInGame++;
 			vector<int>::iterator it;
-			int ser = 0;
+			int ser = 9;
 			it = find(vec.begin(), vec.end(), ser);
 			if (it != vec.end())
 			{
@@ -68,6 +67,11 @@ public:
 				cout << it - vec.begin() + 1 << "\n";
 				vec.at(it - vec.begin()) = playerID;
 				cout << "now " << vec.at(it - vec.begin());
+				if (vec.at(it - vec.begin()) == 0) {
+					activePlayer = vec.at(it - vec.begin());
+					cout << "activePlayer is now " << activePlayer << endl;
+					activePlayerPos = 0;
+				}
 			}
 			else
 				cout << "Element not found.\n\n";
@@ -81,7 +85,7 @@ public:
 		{
 			cout << "Element " << ser << " found at position : ";
 			cout << it - vec.begin() + 1 << "\n";
-			vec.at(it - vec.begin()) = 0;
+			vec.at(it - vec.begin()) = 9;
 			cout << "now " << vec.at(it - vec.begin());
 		}
 		else
@@ -95,15 +99,16 @@ public:
 			drawHouse();
 			c = houseStands();
 		}
-		compare();
+
 	}
 
 private:
-	vector<int> vec{ 0, 0, 0, 0 };
+	vector<int> vec{ 9, 9, 9, 9 };
 	int pHand[4];
 	int dHand = 0;
 	int cardCounter = 0;
-	int activePlayer = vec.at(0);
+	int activePlayer;
+	int activePlayerPos;
 	int cardDeck[52];
 	int deckSize;
 	bool playerBust[4];
@@ -125,27 +130,36 @@ private:
 			j++;
 		}
 	}
-
+	//update needs to run in a way where it only selects filled spots as active player and ignores empty spots
 	string nextPlayer() {
-		if (activePlayer == 0) {
-			for (int i = 0; activePlayer < 0; i++) {
-				activePlayer = vec.at(i);
-				cout << "Next player" << activePlayer << endl;
-				cout << "Player has: " << pHand[activePlayer] << endl;
-				return "Next player";
-			}
-		}
-		if (activePlayer >= 3) {
+		activePlayerPos++;
+		cout << "CURRENT PLAYER: " << activePlayerPos << endl;
+		if (activePlayerPos > 3) {
+			activePlayerPos = 0;
+			activePlayer = vec.at(activePlayerPos);
+			cout << "round finished house turn " << endl;
 			doHouse();
-			cout << "round finished house turn" << endl;
-			return "Next player";
+			for (int i = 0; i < 4; i++) {
+				if (vec.at(i) != 9) {
+					compare(i);
+				}
+			}
+			cout << "New round starting... " << endl;
+			reset();
+			deal();
+			
+			return "Next player ";
+				
+		}
+		if (vec.at(activePlayerPos) == 9){
+			nextPlayer();
 		}
 		else {
-			activePlayer++;
-			cout << "Next player" << activePlayer << endl;
+			activePlayer = vec.at(activePlayerPos);
+			cout << "Next player " << activePlayer << endl;
 			cout << "Player has: " << pHand[activePlayer] << endl;
 			return "Next player";
-		}
+		}		
 		
 	}
 
@@ -160,21 +174,18 @@ private:
 			if (pHand[playerID] > 21) {
 				playerBust[playerID] = true;
 				cout << pHand[playerID] << "\n";
-				cout << "You can't hit anymore (use this shit to disable the hit option)";
+				cout << "Player busted - player" << playerID;
 				stand(playerID);
 				return "You can't hit anymore (use this shit to disable the hit option)";
 			}
 			else if (!playerBust[playerID] && !dealerBust) {
-				cout << "Player now has: " << pHand[playerID] << endl;
-				return "Player now has" + pHand[playerID];
-			}
-			else if (dealerBust) {
-				return "Disable hitting in this situation since the game is over";
+				cout << "Player " << playerID << "now has: " << pHand[playerID] << endl;
+				return "Player now has: " + pHand[playerID];
 			}
 	}
 
 	string stand(int playerID) {
-		cout << "Player is standing with " << pHand[playerID] << endl;
+		cout << "Player is standing with: " << pHand[playerID] << endl;
 		standing = false;
 		nextPlayer();
 		return "Player is standing with " + pHand[playerID];
@@ -195,7 +206,7 @@ private:
 		if (dHand > 21) {
 			dealerBust = true;
 			cout << "Dealer now has: " << dHand << endl;
-			cout << "You can't hit anymore (use this shit to disable the hit option)" << endl;
+			cout << "Dealer Bust" << endl;
 			return "You can't hit anymore (use this shit to disable the hit option)";
 		}
 		if (!dealerBust) {
@@ -211,43 +222,43 @@ private:
 		}
 		
 	}
-
-	string compare() {
-		for (int i = 0; i < 4; i++) {
-			if (vec.at(i) != 0) {
+	//update?
+	string compare(int i) {
 				if (!playerBust[i] && !dealerBust) {
 					if (pHand[i] > dHand) {
-						cout << "Player wins - player " << endl;
+						cout << "Player wins - player "<< i << endl;
 						return "Player wins - player " + i;
 					}
 					else if (pHand[i] < dHand) {
 						cout << "Dealer wins" << endl;
-						return "Dealer wins";
+						return "Dealer wins against player " + i;
 					}
 					else if (pHand[i] == dHand) {
 						cout << "It's a tie " << endl;
-						return "It's a tie";
+						return "It's a tie between dealer and player " + i;
 					}
 				}
 				else if (playerBust[i]) {
-					cout << "Player busted - player " << endl;
+					cout << "Player busted - player "<< i << endl;
 					return "Player busted - player " + i;
 				}
 				else if (dealerBust) {
-					cout << "Dealer busted, player wins - player " << endl;
+					cout << "Dealer busted, player wins - player " << i << endl;
 					return "Dealer busted, player wins - player " + i;
 				}
-			}
-			reset();
-		}
 	}
-
+		
 	void reset() {
-		for (int i = 0; i < 3; i++) {
-			pHand[i] = 0;
-			playerBust[i] = 0;
+		for (int i = 0; i < 4; i++) {
+			if (vec.at(i) != 9) {
+				pHand[i] = 0;
+				playerBust[i] = 0;
+			}
 		}
 		dHand = 0;
 		dealerBust = 0;
+		genDeck();
+		shuffleDeck();
+		cardCounter = 0;
 	}
 };
