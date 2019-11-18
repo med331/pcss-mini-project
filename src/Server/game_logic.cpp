@@ -55,7 +55,7 @@ public:
 		}
 		return "";
 	}
-
+	//Methed for adding players to the game uses find to acces an empty spot represented by the value 9 in the players vector "vec" and replaces it with a player id
 	void addPlayer(int playerID) {
 		if (playersInGame != maxPlayers) {
 			playersInGame++;
@@ -77,6 +77,7 @@ public:
 				cout << "Element not found.\n\n";
 		}
 	}
+	//Reverse of the addPlayer method find specific player ids and changes them to the value 9
 	void removePlayer(int playerID) {
 		vector<int>::iterator it;
 		int ser = playerID;
@@ -90,6 +91,7 @@ public:
 		else
 			cout << "Element not found.\n\n";
 	}
+	//Draws for house until house stands or dealerbust is true this is intended to be run at the end of a round
 	void doHouse() {
 		bool c = false;
 		cout << "house turn" << endl;
@@ -113,7 +115,7 @@ private:
 	bool playerBust[4];
 	bool dealerBust = false;
 
-	
+	//generates 52 values to simulate a deck of cards
 	void genDeck() {
 		int b = 1;
 		int j = 0;
@@ -129,7 +131,7 @@ private:
 			j++;
 		}
 	}
-	//update needs to run in a way where it only selects filled spots as active player and ignores empty spots
+	//Method for finding the next player in the vec vector skipping over empty player spots
 	string nextPlayer() {
 		activePlayerPos++;
 		cout << "CURRENT PLAYER: " << activePlayerPos << endl;
@@ -177,7 +179,7 @@ private:
 				playerBust[playerID] = true;
 				cout << pHand[playerID] << "\n";
 				cout << "Player busted - player" << playerID;
-				stand(playerID);
+				nextPlayer();
 				return "Player has over 21, player busted - player" + playerID;
 			}
 			else if (!playerBust[playerID] && !dealerBust) {
