@@ -13,7 +13,7 @@
 
 #define DEFAULT_ADDRESS "172.20.10.2"
 
-/*using namespace std;*/
+using namespace std;
 
 class ServerInterface
 {
@@ -23,17 +23,13 @@ class ServerInterface
         struct addrinfo *result = NULL,
                         *ptr = NULL,
                         hints;
-        /*const char *sendbuf = "Hello, Network!";*/
         char recvbuf[DEFAULT_BUFLEN];
         int iResult;
         int recvbuflen = DEFAULT_BUFLEN;
 
-
-
     public:
         ServerInterface()
         {
-            /* construct me */
             iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 
             ZeroMemory( &hints, sizeof(hints) );
@@ -45,7 +41,6 @@ class ServerInterface
 
         void connectToServer()
         {
-            printf("This happened");
             for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
                 ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
                     ptr->ai_protocol);
@@ -69,13 +64,6 @@ class ServerInterface
             /* REMEMBER to add check for message sent */
         };
 
-        /* The message sent to the server when client joins */
-        void sendConnectMessage()
-        {
-            const char *sendbuf = "Client wants to join :)";
-            sendToServer(sendbuf);
-        };
-
         /* Actions the client makes, sent to server */
         void sendAction(bool action)
         {
@@ -89,7 +77,7 @@ class ServerInterface
             }
         }
 
-        std::string recieveFromServer()
+        string recieveFromServer()
         {
             do {
 
@@ -108,7 +96,7 @@ class ServerInterface
 
         void closeConnection()
         {
-            iResult = shutdown(ConnectSocket, 1);
+            shutdown(ConnectSocket, 1);
             closesocket(ConnectSocket);
             WSACleanup();
         }

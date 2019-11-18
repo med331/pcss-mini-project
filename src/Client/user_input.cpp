@@ -2,29 +2,29 @@
 
 using namespace std;
 
-string PlayerJoin (){
+bool PlayerJoin (){
     cout<<"Do you want to join a game??"<<endl;
     cout<<"[Y]es or [N]o"<<endl;
     string input;
     cin>>input;
 
     if(input=="Y"||input=="y") {
-        return "Yes";
+        return true;
     } else {
-        return "No";
+        return true; /* kekw */
     }
 }
 
-string PlayerHit (){
+bool PlayerHit (){
     cout<<"Do you wish to [H]it or [S]tand?"<<endl;
     string input;
     cin>>input;
 
     if(input=="H"||input=="h") {
-        return "Hit";
+        return true;
     }
     else {
-        return "Stand";
+        return false;
     }
 
 }
