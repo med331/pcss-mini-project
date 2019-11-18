@@ -9,7 +9,7 @@
 #include <thread>
 #include <string>
 #include <iostream>
-//#include <sys/types.h>
+#include <sys/types.h>
 
 #include <windows.h>
 #include <winsock2.h>
@@ -19,7 +19,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "80"
-#define BACKLOG 1
+#define BACKLOG 10
 
 #include "game_logic.h"
 
@@ -29,38 +29,47 @@ using namespace std;
 //bool doSendMessage = false;
 //SOCKET ListenSocket = -1;
 
+
 class ConnectionThread {
-private: //variables
+public: //reset to private
 
     struct addrinfo *resultCopy;
     int playerID;
-    bool playerConnected=false;
+    bool playerConnected=true;
     bool isListening=false;
     char* clientMessage;
     SOCKET ListenSocket=-1;
     SOCKET ClientSocket=-1;
 
 public:
+    ConnectionThread() {}
     void setResultCopy (struct addrinfo *resultInfo) {resultCopy=resultInfo;}
     void operator() () { //the function used by the threads
-
-        try {ListenSocket = socket(resultCopy->ai_family, resultCopy->ai_socktype, resultCopy->ai_protocol);
-
-        bind( ListenSocket, resultCopy->ai_addr, (int)resultCopy->ai_addrlen);
-
-        freeaddrinfo(const_cast<struct addrinfo*>(resultCopy));
-
-        listen(ListenSocket, BACKLOG);
-
-        ClientSocket = accept(ListenSocket, NULL, NULL);} catch (const std::invalid_argument& e) {printf("problem");}
+            //printf("thread started");
+            ListenSocket = socket(resultCopy->ai_family, resultCopy->ai_socktype, resultCopy->ai_protocol);
+            //printf("ListenSocket fine");
+            bind( ListenSocket, resultCopy->ai_addr, (int)resultCopy->ai_addrlen);
+            //printf("Binding fine");
+            freeaddrinfo(const_cast<struct addrinfo*>(resultCopy));
+            //printf("Freeaddrinfo done & Listening");
+            listen(ListenSocket, BACKLOG);
+            //printf("Accepting");
+            ClientSocket = accept(ListenSocket, NULL, NULL);
+            std::cout<<"Ran"<<endl;
+            //std::cout<<(int)ClientSocket<<endl;
+            playerConnected=true;
+            ClientMessage("It is your turn");
+            char* input;
+            cout<<recv(ClientSocket, input, DEFAULT_BUFLEN, 0)<<"\nMessage: "<<input<<endl;
 
     }
     void EndThread () {} //Ends the current thread
 
     void ClientMessage(string input) {
-        if(playerConnected) {
-            send( ClientSocket, input.c_str(), strlen(input.c_str()), 0 );
-        }
+        std::cout<<"Sending"<<endl;
+        //if(playerConnected) {
+            send( ClientSocket, input.c_str(), DEFAULT_BUFLEN, 0 );
+        //}
     }
 
     void ListenSocketReset() {
@@ -89,33 +98,26 @@ public:
     }
 };
 
-/*class ConnectionAcceptThread {
-    void operator() () const { //the function used by the threads
-    }
-};*/
-
 class ConnectionManager { //Adds and removes players and manages their actions
 
 public:
     static const int maxPlayers=1;
 
-private:
+private: //reset to private
 
     game_logic game; //State of the game
     ConnectionThread connectionArray[maxPlayers]; //Array of connections
-    thread threadArray[maxPlayers]; //Array of threads
-    /*ConnectionAcceptThread conAccepter;
-    thread conAcceptThread(conAccepter);*/
+    std::thread threadArray[maxPlayers];
+
     WSADATA wsaData;
     int bytesReceived;
-
-    //SOCKET ListenSocket=-1;
-    //SOCKET ClientSocket[maxPlayers];
 
     struct addrinfo *result = NULL;
     struct addrinfo hints;
 
-    //int iSendResult;
+    //SOCKET ListenSocket=-1;
+    //SOCKET ClientSocket=-1;
+
     char hitOrStandInput[DEFAULT_BUFLEN];
     int inputLength = DEFAULT_BUFLEN;
 
@@ -123,7 +125,6 @@ public:
     ConnectionManager() { //Constructor
         for(int i=0;i<maxPlayers;i++) {
             connectionArray[i].SetPlayerID(i);
-
         }
         ServerSetup();
     }
@@ -139,28 +140,43 @@ public:
 
         getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
         connectionArray[0].setResultCopy(result);
-        try { threadArray [0].detach();} catch (const std::invalid_argument& e) {printf("problem");}
+        for(int i=0;i<maxPlayers;i++) {
+            threadArray[i]=std::thread(connectionArray[i]);
+            threadArray[i].join();
+        }
+        /*printf("joining");
+        //threadArray[0].join();
+        ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+        //printf("binding");
+        bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
+        freeaddrinfo(result);
+        listen(ListenSocket, BACKLOG);
+        printf("listening");
+        ClientSocket = accept(ListenSocket, NULL, NULL);
+        printf("serverupdate starting");*/
+        //cout<<recv(connectionArray[game.getActivePlayer()].GetClientSocket(), hitOrStandInput, inputLength, 0)<<"\nMessage: "<<hitOrStandInput<<endl;
+        //while(true) {
+            //ServerUpdate();
+
+        //}
     }
 
     void ServerUpdate() {
         //Send current player prompt
-        send( connectionArray[game.getActivePlayer()].GetClientSocket(), "It is your turn", 15, 0 );
+        connectionArray[0].ClientMessage("It is your turn");
+        //send( connectionArray[game.getActivePlayer()].GetClientSocket(), "It is your turn", 15, 0 );
         //Take input from current player
 
-        bytesReceived = recv(connectionArray[game.getActivePlayer()].GetClientSocket(), hitOrStandInput, inputLength, 0);
-        if (bytesReceived > 0) {
-            /*printf("Bytes received: %d\n", iResult);
-            printf("Message received: %s\n", recvbuf);
-            iSendResult = send( ClientSocket, recvbuf, iResult, 0 );
-            printf("Bytes sent: %d\n", iSendResult);*/
-            //const char* output="deat";
-            if(hitOrStandInput=="Hit") {
-                SendMessageToAll(game.makeMove(game.getActivePlayer(),true).c_str());
+        bytesReceived = recv(connectionArray[0].GetClientSocket(), hitOrStandInput, DEFAULT_BUFLEN, 0);
+        std::cout<<hitOrStandInput<<endl;
+        /*if (bytesReceived > 0) {
+            if(hitOrStandInput=="hit") {
+                SendMessageToAll(game.makeMove(0,true).c_str());
             } else {
-                SendMessageToAll(game.makeMove(game.getActivePlayer(),false).c_str());
+                SendMessageToAll(game.makeMove(0,false).c_str());
             }
             /*cout<<bytesReceived<<endl;
-            int byteSend=*/
+            int byteSend=
             //send(ClientSocket[activePlayer],output,strlen(output),0);
             //cout<<byteSend<<endl;
 
@@ -169,8 +185,8 @@ public:
         else if (bytesReceived == 0) {
             //printf("Connection closing...\n");
 
-            Unsubscribe(game.getActivePlayer());
-        }
+            //Unsubscribe(game.getActivePlayer());
+        }*/
     }
 
     void Unsubscribe (int playerID) {
