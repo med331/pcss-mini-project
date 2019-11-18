@@ -39,6 +39,9 @@
 		<Unit filename="server_interface.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="server_interface.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="user_input.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
