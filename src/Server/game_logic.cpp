@@ -106,19 +106,6 @@ public:
 		else
 			cout << "Element not found.\n\n";
 	}
-private:
-	vector<int> vec{ 9, 9, 9, 9 };
-	int pHand[4];
-	int dHand = 0;
-	int cardCounter = 0;
-	int activePlayer;
-	int activePlayerPos;
-	int cardDeck[52];
-	int deckSize;
-	bool playerBust[4];
-	bool dealerBust = false;
-
-	//Draws for house until house stands or dealerbust is true this is intended to be run at the end of a round
 	string doHouse() {
 		string s;
 		bool c = false;
@@ -132,6 +119,20 @@ private:
 		return s;
 
 	}
+private:
+	vector<int> vec{ 9, 9, 9, 9 };
+	int pHand[4];
+	int dHand = 0;
+	int cardCounter = 0;
+	int activePlayer;
+	int activePlayerPos;
+	int cardDeck[52];
+	int deckSize;
+	bool playerBust[4];
+	bool dealerBust = false;
+
+	//Draws for house until house stands or dealerbust is true this is intended to be run at the end of a round
+	
 
 	//generates 52 values to simulate a deck of cards
 	void genDeck() {
