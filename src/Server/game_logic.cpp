@@ -18,6 +18,21 @@ public:
 		return activePlayer;
 	}
 
+	string getHouseStats() {
+		string bust = "";
+		string stands = "";
+		if (dealerBust == true) {
+			bust = "Dealer has busted "
+		}
+		if (houseStands() == true) {
+			stands = "House stands "
+		}
+		return "Dealer has: " + dHand + " " + bust + stands
+	}
+	string getplayerStats(int playerId) {
+		return "Player " + playerId + " Has " + pHand[playerId];
+	}
+
 	// Deals at the start of the game, by looping through the players vector and hitting twice for the indexes in the vector that are not equal to 9 (we use 9 to mark an empty slot)
 	// Also adds a card to the dealer hand.
 	string deal() {
@@ -91,18 +106,6 @@ public:
 		else
 			cout << "Element not found.\n\n";
 	}
-	//Draws for house until house stands or dealerbust is true this is intended to be run at the end of a round
-	void doHouse() {
-		bool c = false;
-		cout << "house turn" << endl;
-		while (!c && !dealerBust)
-		{
-			drawHouse();
-			c = houseStands();
-		}
-
-	}
-
 private:
 	vector<int> vec{ 9, 9, 9, 9 };
 	int pHand[4];
@@ -114,6 +117,21 @@ private:
 	int deckSize;
 	bool playerBust[4];
 	bool dealerBust = false;
+
+	//Draws for house until house stands or dealerbust is true this is intended to be run at the end of a round
+	string doHouse() {
+		string s;
+		bool c = false;
+		cout << "house turn" << endl;
+		while (!c && !dealerBust)
+		{
+			s.push_back(drawHouse());
+			c = houseStands();
+		}
+
+		return s;
+
+	}
 
 	//generates 52 values to simulate a deck of cards
 	void genDeck() {
@@ -149,7 +167,7 @@ private:
 			reset();
 			deal();
 			
-			return "Next player ";
+			return "Round ended house now draws ";
 				
 		}
 		if (vec.at(activePlayerPos) == 9){
@@ -159,7 +177,7 @@ private:
 			activePlayer = vec.at(activePlayerPos);
 			cout << "Next player " << activePlayer << endl;
 			cout << "Player has: " << pHand[activePlayer] << endl;
-			return "Next player ";
+			return "Next player " + activePlayer;
 		}		
 		
 	}
