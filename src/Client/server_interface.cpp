@@ -7,8 +7,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <iostream>
 
-#define DEFAULT_BUFLEN 512
+#define DEFAULT_BUFLEN 32
 #define DEFAULT_PORT "80"
 
 #define DEFAULT_ADDRESS "172.20.10.2"
@@ -23,7 +24,7 @@ class ServerInterface
         struct addrinfo *result = NULL,
                         *ptr = NULL,
                         hints;
-        char recvbuf[DEFAULT_BUFLEN];
+        char* recvbuf;
         int iResult;
         int recvbuflen = DEFAULT_BUFLEN;
 
@@ -61,6 +62,7 @@ class ServerInterface
         {
             iResult = send( ConnectSocket, message, (int)strlen(message), 0 );
             printf("Bytes Sent: %d\n", iResult);
+            cout << message << endl;
             /* REMEMBER to add check for message sent */
         };
 
@@ -80,11 +82,13 @@ class ServerInterface
         string recieveFromServer()
         {
             do {
-
+                recvbuf = new char[recvbuflen];
                 iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
-                if ( iResult > 0 )
-                    /* printf("Bytes received: %d\n", iResult); */
-                    return "data received"; /* change this */
+                if ( iResult > 0 ){
+                     printf("Bytes received: %d\n", iResult);
+                    cout << recvbuf << endl;
+                    return recvbuf; /* change this */
+                }
                 else if ( iResult == 0 )
                     printf("Connection closed\n");
                 else

@@ -27,3 +27,20 @@
 1574116299 d:\chech\dropbox\aau\sem3 .aau\pcss .sem3\mini project .pcss\pcss-mini-project\src\client\user_input.cpp
 	<iostream>
 
+1574172184 source:d:\data\pcss\src\client\main.cpp
+	<iostream>
+	"server_interface.cpp"
+	"user_input.cpp"
+
+1574172111 d:\data\pcss\src\client\server_interface.cpp
+	<windows.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<iostream>
+
+1574154959 d:\data\pcss\src\client\user_input.cpp
+	<iostream>
+
