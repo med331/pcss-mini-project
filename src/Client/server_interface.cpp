@@ -86,7 +86,7 @@ class ServerInterface
                 iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
                 if ( iResult > 0 ){
                      printf("Bytes received: %d\n", iResult);
-                    cout << recvbuf << endl;
+
                     return recvbuf; /* change this */
                 }
                 else if ( iResult == 0 )
@@ -94,7 +94,7 @@ class ServerInterface
                 else
                     printf("recv failed with error: %d\n", WSAGetLastError());
 
-            } while( iResult > 0 );
+            } while( iResult < recvbuflen );
             return "";
         };
 
