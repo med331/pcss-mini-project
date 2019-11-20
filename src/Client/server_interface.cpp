@@ -12,7 +12,7 @@
 #define DEFAULT_BUFLEN 32
 #define DEFAULT_PORT "80"
 
-#define DEFAULT_ADDRESS "172.20.10.2"
+#define DEFAULT_ADDRESS "127.0.0.1"
 
 using namespace std;
 

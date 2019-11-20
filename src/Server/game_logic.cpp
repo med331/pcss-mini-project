@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <time.h>
+#include <string>
 
 using namespace std;
 
@@ -22,15 +23,15 @@ public:
 		string bust = "";
 		string stands = "";
 		if (dealerBust == true) {
-			bust = "Dealer has busted "
+			bust = "Dealer has busted ";
 		}
 		if (houseStands() == true) {
-			stands = "House stands "
+			stands = "House stands ";
 		}
-		return "Dealer has: " + dHand + " " + bust + stands
+		return string("Dealer has: ") + to_string(dHand) + string(" ") + bust + stands;
 	}
 	string getplayerStats(int playerId) {
-		return "Player " + playerId + " Has " + pHand[playerId];
+		return "Player " + to_string(playerId) + " Has " + to_string(pHand[playerId]);
 	}
 
 	// Deals at the start of the game, by looping through the players vector and hitting twice for the indexes in the vector that are not equal to 9 (we use 9 to mark an empty slot)
@@ -50,7 +51,7 @@ public:
 		cout << "Dealer now has: " << dHand << endl;
 		return "";
 	}
-	
+
 	void updateGame() {
 		//Call functions based to update the game
 		genDeck();
@@ -68,7 +69,7 @@ public:
 			cout << "it's not your turn";
 			return  "it's not your turn";
 		}
-		return "";
+		//return "";
 	}
 	//Methed for adding players to the game uses find to acces an empty spot represented by the value 9 in the players vector "vec" and replaces it with a player id
 	void addPlayer(int playerID) {
@@ -112,7 +113,7 @@ public:
 		cout << "house turn" << endl;
 		while (!c && !dealerBust)
 		{
-			s.push_back(drawHouse());
+			s.string::append(drawHouse());
 			c = houseStands();
 		}
 
@@ -132,7 +133,7 @@ private:
 	bool dealerBust = false;
 
 	//Draws for house until house stands or dealerbust is true this is intended to be run at the end of a round
-	
+
 
 	//generates 52 values to simulate a deck of cards
 	void genDeck() {
@@ -167,9 +168,9 @@ private:
 			cout << "New round starting... " << endl;
 			reset();
 			deal();
-			
+
 			return "Round ended house now draws ";
-				
+
 		}
 		if (vec.at(activePlayerPos) == 9){
 			nextPlayer();
@@ -179,8 +180,8 @@ private:
 			cout << "Next player " << activePlayer << endl;
 			cout << "Player has: " << pHand[activePlayer] << endl;
 			return "Next player " + activePlayer;
-		}		
-		
+		}
+
 	}
 
 	// Function used to shuffle the deck, using the random_shuffle method with a random seed based on the current time.
@@ -199,11 +200,14 @@ private:
 				cout << pHand[playerID] << "\n";
 				cout << "Player busted - player" << playerID;
 				nextPlayer();
-				return "Player has over 21, player busted - player" + playerID;
+				return ""+playerID;
+				//"Player has over 21, player busted - player" + playerID;
 			}
 			else if (!playerBust[playerID] && !dealerBust) {
 				cout << "Player " << playerID << " now has: " << pHand[playerID] << endl;
-				return "Player now has: " + pHand[playerID];
+				//return "Player now has: ";
+				//+ pHand[playerID];
+				return ""+pHand[playerID];
 			}
 	}
 
@@ -240,14 +244,14 @@ private:
 			if (!houseStands()) {
 				cout << "Dealer now has: " << dHand << endl;
 				return "Dealer now has: " + dHand;
-				
+
 			}
 			else
 				cout << "Dealer now has: " << dHand << endl;
 				cout << "House has 17 or higher, house stands." << endl;
 				return "House has 17 or higher, house stands.";
 		}
-		
+
 	}
 	// Function used at the end of the round, in order to compare the player hands with the dealer hand and decide who wins.
 	string compare(int i) {
@@ -277,7 +281,7 @@ private:
 					return "Dealer busted, player wins - player " + i;
 				}
 	}
-	// Function used for resetting the dealer hand, the player hands by looping through the player vector and rebuilding the deck so we don't run out of cards.	
+	// Function used for resetting the dealer hand, the player hands by looping through the player vector and rebuilding the deck so we don't run out of cards.
 	void reset() {
 		for (int i = 0; i < 4; i++) {
 			if (vec.at(i) != 9) {

@@ -1,14 +1,32 @@
 # depslib dependency file v1.0
 1572440339 source:d:\data\pcss\src\server\client_interface.cpp
 
-1572440339 source:d:\data\pcss\src\server\session_management.cpp
-
-1572525499 source:d:\data\pcss\src\server\game_logic.cpp
+1574244869 source:d:\data\pcss\src\server\session_management.cpp
+	<thread>
+	<string>
 	<iostream>
+	<sys/types.h>
+	<windows.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<stdlib.h>
+	<stdio.h>
+	"game_logic.h"
 
-1572525804 source:d:\data\pcss\src\server\main.cpp
+1574245211 source:d:\data\pcss\src\server\game_logic.cpp
 	<iostream>
-	"game_logic.cpp"
+	<stdlib.h>
+	<algorithm>
+	<vector>
+	<time.h>
+	<string>
+
+1574245179 source:d:\data\pcss\src\server\main.cpp
+	<iostream>
+	"game_logic.h"
+	"session_management.cpp"
+	<thread>
+	<string>
 
 1572541740 d:\data\pcss\src\server\game_logic.cpp
 	<iostream>
@@ -52,4 +70,24 @@
 	<thread>
 	<string>
 	<iostream>
+
+1574245254 d:\data\pcss\src\server\game_logic.h
+	<iostream>
+	<stdlib.h>
+	<algorithm>
+	<vector>
+	<time.h>
+	<string>
+
+1574244869 d:\data\pcss\src\server\session_management.cpp
+	<thread>
+	<string>
+	<iostream>
+	<sys/types.h>
+	<windows.h>
+	<winsock2.h>
+	<ws2tcpip.h>
+	<stdlib.h>
+	<stdio.h>
+	"game_logic.h"
 
