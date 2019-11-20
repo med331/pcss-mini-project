@@ -1,7 +1,11 @@
 #include <iostream>
 #include "server_interface.cpp"
 #include "user_input.cpp"
-
+// convert int to char:  htonl(int);
+// convert char to int: ntohl(char)
+// https://www.binarytides.com/receive-full-data-with-recv-socket-function-in-c/
+// https://stackoverflow.com/questions/27535543/c-socket-recv-not-receiving-correct-number-of-bytes
+// https://docs.microsoft.com/en-us/windows/win32/winsock/complete-client-code
 int main()
 {
     ServerInterface server;

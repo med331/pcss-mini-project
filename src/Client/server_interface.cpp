@@ -64,7 +64,7 @@ class ServerInterface
             printf("Bytes Sent: %d\n", iResult);
             cout << message << endl;
             /* REMEMBER to add check for message sent */
-        };
+        }
 
         /* Actions the client makes, sent to server */
         void sendAction(bool action)
