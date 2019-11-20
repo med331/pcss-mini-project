@@ -14,16 +14,14 @@ int main()
     bool isPlayerTurn = true;
     while (true) {
         printf("looping");
-        if (isPlayerTurn) {
+        if (true) {
             /* Get player input and send it to the server */
             printf("can hitorstand\n");
             isPlayerTurn = false;
-            while(true){
             bool hitOrStand = PlayerHit();
             server.sendAction(hitOrStand);
             string response = server.recieveFromServer();
             cout<<response << endl;
-            }
         }
         else {
             /* keep receiving messages and update isPlayerTurn if "your turn" message is received" */

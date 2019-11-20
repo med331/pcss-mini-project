@@ -19,7 +19,7 @@
 
 #define DEFAULT_BUFLEN 32
 #define DEFAULT_PORT "80"
-#define BACKLOG 10
+#define BACKLOG 100
 
 #include "game_logic.h"
 
@@ -35,12 +35,12 @@ public: //reset to private
 	SOCKET ClientSocket = -1;
 	int bytesReceived = 0;
 
-	int ClientMessage(string _input) {
+	int ClientMessage(string _sendInput) {
 		//if(playerConnected) {
-		cout << "Sent " << bytesReceived << " bytes" << endl;
+		const char* _input=_sendInput.c_str();
+		bytesReceived = send(ClientSocket, _input, DEFAULT_BUFLEN, 0);
+        cout << "Sent " << bytesReceived << " bytes" << endl;
 		cout << "output: " << _input << endl;
-		bytesReceived = send(ClientSocket, _input.c_str(), (int)strlen(_input.c_str()), 0);
-
 		return bytesReceived;
 		//}
 	}
@@ -48,7 +48,7 @@ public: //reset to private
 	string ClientReceive() {
 		char* _input = new char[DEFAULT_BUFLEN];
 		//if(playerConnected) {
-		bytesReceived = recv(ClientSocket, _input, (int)strlen(_input), 0);
+		bytesReceived = recv(ClientSocket, _input, DEFAULT_BUFLEN, 0);
 		return _input;
 		//}
 	}
@@ -104,9 +104,8 @@ private: //reset to private
 
 	int playerAmount = 0;
 
-	game_logic game; //State of the game
-	ConnectionThread connectionArray[4]; //Array of connections
-	std::thread threadArray[4];
+	ConnectionThread connectionArray[1]; //Array of connections
+	std::thread threadArray[1];
 
 	WSADATA wsaData;
 	int bytesReceived;
@@ -120,12 +119,14 @@ private: //reset to private
 	int inputLength = DEFAULT_BUFLEN;
 
 public:
+
+	game_logic game; //State of the game
 	ConnectionManager() { //Constructor
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 1; i++) {
 			connectionArray[i].SetPlayerID(i);
 			//connectionArray[i].SetGameReference(game);
 		}
-		ServerSetup();
+		//ServerSetup();
 	}
 
 	int ServerSetup()
@@ -204,7 +205,7 @@ public:
 	}
 
 	void SendMessageToAll(const char* message) {
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 1; i++) {
 			if (connectionArray[i].GetPlayerConnected()) {
 				connectionArray[i].ClientMessage(message);
 			}

@@ -18,6 +18,10 @@ public:
 	int maxPlayers = 4;
 	int playersInGame = 0;
 
+	int getMaxPlayer() {
+		return maxPlayers;
+	}
+
 	int getActivePlayer() {
 		return activePlayer;
 	}
@@ -40,7 +44,7 @@ public:
 	// Deals at the start of the game, by looping through the players vector and hitting twice for the indexes in the vector that are not equal to 9 (we use 9 to mark an empty slot)
 	// Also adds a card to the dealer hand.
 	string deal() {
-		for (int i = 0; i <= 3; i++) {
+		for (int i = 0; i <=3; i++) {
 			if (vec.at(i) != 9) {
 				hit(i);
 				hit(i);
@@ -63,16 +67,15 @@ public:
 
 	string makeMove(int playerID, bool action) {
 		//if (playerID == activePlayer) {
-		if (action == false) {
-			return stand(playerID);
-		}
-		else return hit(playerID);
+			if (action == false) {
+				return stand(playerID);
+			} else {return hit(playerID);}
 		/*}
 		else {
 			cout << "it's not your turn";
 			return  "it's not your turn";
 		}*/
-		//return "";
+		return "Making a move failed";
 	}
 	//Methed for adding players to the game uses find to acces an empty spot represented by the value 9 in the players vector "vec" and replaces it with a player id
 	void addPlayer(int playerID) {
@@ -175,7 +178,7 @@ private:
 			return "Round ended house now draws ";
 
 		}
-		if (vec.at(activePlayerPos) == 9) {
+		if (vec.at(activePlayerPos) == 9){
 			nextPlayer();
 		}
 		else {
@@ -195,23 +198,22 @@ private:
 
 	// Function used to "hit" a card, i.e. to add a card to the player hand.
 	string hit(int playerID) {
-		pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
-		cardCounter++;
-		// check if the player has over 21, if they do they bust and can't hit anymore.
-		if (pHand[playerID] > 21) {
-			playerBust[playerID] = true;
-			cout << pHand[playerID] << "\n";
-			cout << "Player busted - player" << playerID;
-			nextPlayer();
-			return "" + playerID;
-			//"Player has over 21, player busted - player" + playerID;
-		}
-		else if (!playerBust[playerID] && !dealerBust) {
-			cout << "Player " << playerID << " now has: " << pHand[playerID] << endl;
-			//return "Player now has: ";
-			//+ pHand[playerID];
-			return "" + pHand[playerID];
-		}
+			//pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
+			//cardCounter++;
+			// check if the player has over 21, if they do they bust and can't hit anymore.
+			if (pHand[playerID] > 21) {
+				playerBust[playerID] = true;
+				cout << pHand[playerID] << "\n";
+				cout << "Player busted - player" << playerID;
+				nextPlayer();
+				return "Player has over 21, player busted - player" + to_string(playerID);
+			}
+			else if (!playerBust[playerID] && !dealerBust) {
+				cout << "Player " << playerID << " now has: " << pHand[playerID] << endl;
+				//return "Player now has: ";
+				//+ pHand[playerID];
+				return "Player now has "+to_string(pHand[playerID]);
+			} else {return "Hit failed";}
 	}
 
 	string stand(int playerID) {
@@ -251,38 +253,38 @@ private:
 			}
 			else
 				cout << "Dealer now has: " << dHand << endl;
-			cout << "House has 17 or higher, house stands." << endl;
-			return "House has 17 or higher, house stands.";
+				cout << "House has 17 or higher, house stands." << endl;
+				return "House has 17 or higher, house stands.";
 		}
 
 	}
 	// Function used at the end of the round, in order to compare the player hands with the dealer hand and decide who wins.
 	string compare(int i) {
-		// First check if neither the dealer or the player busted, so only the comparison for the sum of the cards is done.
-		if (!playerBust[i] && !dealerBust) {
-			if (pHand[i] > dHand) {
-				cout << "Player wins - player " << i << endl;
-				return "Player wins - player " + i;
-			}
-			else if (pHand[i] < dHand) {
-				cout << "Dealer wins" << endl;
-				return "Dealer wins against player " + i;
-			}
-			else if (pHand[i] == dHand) {
-				cout << "It's a tie " << endl;
-				return "It's a tie between dealer and player " + i;
-			}
-		}
-		// If the player busts, he autoloses.
-		else if (playerBust[i]) {
-			cout << "Player busted - player " << i << endl;
-			return "Player busted - player " + i;
-		}
-		// Else if the dealer busts, all the players that did not bust win.
-		else if (dealerBust) {
-			cout << "Dealer busted, player wins - player " << i << endl;
-			return "Dealer busted, player wins - player " + i;
-		}
+				// First check if neither the dealer or the player busted, so only the comparison for the sum of the cards is done.
+				if (!playerBust[i] && !dealerBust) {
+					if (pHand[i] > dHand) {
+						cout << "Player wins - player "<< i << endl;
+						return "Player wins - player " + i;
+					}
+					else if (pHand[i] < dHand) {
+						cout << "Dealer wins" << endl;
+						return "Dealer wins against player " + i;
+					}
+					else if (pHand[i] == dHand) {
+						cout << "It's a tie " << endl;
+						return "It's a tie between dealer and player " + i;
+					}
+				}
+				// If the player busts, he autoloses.
+				else if (playerBust[i]) {
+					cout << "Player busted - player "<< i << endl;
+					return "Player busted - player " + i;
+				}
+				// Else if the dealer busts, all the players that did not bust win.
+				else if (dealerBust) {
+					cout << "Dealer busted, player wins - player " << i << endl;
+					return "Dealer busted, player wins - player " + i;
+				}
 	}
 	// Function used for resetting the dealer hand, the player hands by looping through the player vector and rebuilding the deck so we don't run out of cards.
 	void reset() {
@@ -299,7 +301,6 @@ private:
 		cardCounter = 0;
 	}
 };
-
 
 
 #endif // GAME_LOGIC_H_INCLUDED

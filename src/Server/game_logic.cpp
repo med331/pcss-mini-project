@@ -59,17 +59,17 @@ public:
 	}
 
 	string makeMove(int playerID, bool action) {
-		if (playerID == activePlayer) {
+		//if (playerID == activePlayer) {
+		return "Margaritassss";
 			if (action == false) {
 				return stand(playerID);
-			}
-			else return hit(playerID);
-		}
+			} else {return "Margaritassss";}
+		/*}
 		else {
 			cout << "it's not your turn";
 			return  "it's not your turn";
-		}
-		//return "";
+		}*/
+		return "";
 	}
 	//Methed for adding players to the game uses find to acces an empty spot represented by the value 9 in the players vector "vec" and replaces it with a player id
 	void addPlayer(int playerID) {
@@ -192,23 +192,25 @@ private:
 
 	// Function used to "hit" a card, i.e. to add a card to the player hand.
 	string hit(int playerID) {
-			pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
-			cardCounter++;
+			//pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
+			//cardCounter++;
 			// check if the player has over 21, if they do they bust and can't hit anymore.
 			if (pHand[playerID] > 21) {
 				playerBust[playerID] = true;
 				cout << pHand[playerID] << "\n";
 				cout << "Player busted - player" << playerID;
 				nextPlayer();
-				return ""+playerID;
+				return "Player " + to_string(playerID) + " has busted";
 				//"Player has over 21, player busted - player" + playerID;
 			}
 			else if (!playerBust[playerID] && !dealerBust) {
 				cout << "Player " << playerID << " now has: " << pHand[playerID] << endl;
 				//return "Player now has: ";
 				//+ pHand[playerID];
-				return ""+pHand[playerID];
+				return "Player now has "+pHand[playerID];
 			}
+			cout<<"It failed, but you still got.... you guessed it!"<<endl;
+			return "Margaritasss";
 	}
 
 	string stand(int playerID) {

@@ -17,28 +17,33 @@ void ConnectionThread::operator()(SOCKET _ClientSocket) { //the function used by
     //recv(ClientSocket, NULL, DEFAULT_BUFLEN, 0);
     if(playerConnected) {
         printf("connected\n");
-        if(playerID==manager.GetGameLogic().getActivePlayer()) {
+        if(playerID==manager.game.getActivePlayer()) {
             printf("active player\n");
             //if(ClientMessage("your turn")>0) {
                 //printf("sent\n");
                 while(true) {
+                    static game_logic MINE;
+                    MINE.updateGame();
+                    MINE.deal();
                     input=ClientReceive();
-                    printf("received\n");
-                    cout<<"bytes: "<<bytesReceived<<endl;
-                    cout<<"input: "<<input<<endl;
-                    if(bytesReceived==3) {
-                        ClientMessage("Hit");//manager.GetGameLogic().makeMove(0,true));
-                        //manager.SendMessageToAll(manager.GetGameLogic().makeMove(0,true).c_str());
-                        printf("sent hit\n");
-                    } else {
-                        ClientMessage("Stand");//manager.GetGameLogic().makeMove(0,false));
-                        //manager.SendMessageToAll(manager.GetGameLogic().makeMove(0,false).c_str());
-                        printf("sent stand\n");
+                    if (bytesReceived>0){
+                        printf("received\n");
+                        cout<<"bytes: "<<bytesReceived<<endl;
+                        cout<<"input: "<<input<<endl;
+                        if(bytesReceived==3) {
+                            ClientMessage(manager.GetGameLogic().makeMove(0,true));//manager.GetGameLogic().makeMove(0,true));
+                            //manager.SendMessageToAll(manager.GetGameLogic().makeMove(0,true).c_str());
+                            printf("sent hit\n");
+                        } else {
+                            ClientMessage(manager.GetGameLogic().makeMove(0,false));//manager.GetGameLogic().makeMove(0,false));
+                            //manager.SendMessageToAll(manager.GetGameLogic().makeMove(0,false).c_str());
+                            printf("sent stand\n");
+                        }
+                        //cout<<"activePlayer: "<<manager.GetGameLogic().getActivePlayer()<<"\nthis player: "<<playerID<<endl;
+                        //ClientMessage(manager.GetGameLogic().makeMove(playerID,true));
+                        input="";
+                        output="";
                     }
-                    //cout<<"activePlayer: "<<manager.GetGameLogic().getActivePlayer()<<"\nthis player: "<<playerID<<endl;
-                    //ClientMessage(manager.GetGameLogic().makeMove(playerID,true));
-                    input="";
-                    output="";
                 }
             //}
         }
@@ -47,9 +52,13 @@ void ConnectionThread::operator()(SOCKET _ClientSocket) { //the function used by
 
 int main()
 {
-    ConnectionManager manager;
-    //game_logic object;
+    //ConnectionManager manager;
+    manager.ServerSetup();
+
     //object.updateGame();
     //manager.ServerUpdate();
     return 0;
 }
+
+
+

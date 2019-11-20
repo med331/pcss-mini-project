@@ -42,7 +42,8 @@ class ServerInterface
 
         void connectToServer()
         {
-            for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
+            ptr=result;
+            //for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
                 ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
                     ptr->ai_protocol);
 
@@ -52,9 +53,9 @@ class ServerInterface
                     ConnectSocket = -1;
 
                 }else{
-                    break;
+                    //break;
                 }
-            }
+            //}
             freeaddrinfo(result);
         };
 
@@ -64,7 +65,7 @@ class ServerInterface
             printf("Bytes Sent: %d\n", iResult);
             cout << message << endl;
             /* REMEMBER to add check for message sent */
-        }
+        };
 
         /* Actions the client makes, sent to server */
         void sendAction(bool action)
@@ -77,7 +78,7 @@ class ServerInterface
                 const char *sendbuf = "Stand";
                 sendToServer(sendbuf);
             }
-        }
+        };
 
         string recieveFromServer()
         {
