@@ -210,27 +210,27 @@ private:
 				// First check if neither the dealer or the player busted, so only the comparison for the sum of the cards is done.
 				if (!playerBust && !dealerBust) {
 					if (pHand > dHand) {
-						cout << "Player wins - player "<< i << endl;
-						return "Player wins - player " + to_string(i) + "\n" + reset();
+						cout << "Player wins"<< endl;
+						return "Player wins\n" + reset();
 					}
 					else if (pHand < dHand) {
 						cout << "Dealer wins" << endl;
-						return "Dealer wins against player " + to_string(i)+ "\n" + reset();
+						return "Dealer wins against player\n" + reset();
 					}
 					else if (pHand == dHand) {
 						cout << "It's a tie " << endl;
-						return "It's a tie between dealer and player " + to_string(i)+ "\n" + reset();
+						return "It's a tie between dealer and player\n" + reset();
 					}
 				}
 				// If the player busts, he autoloses.
 				else if (playerBust) {
-					cout << "Player busted - player "<< i << endl;
-					return "Player busted - player " + to_string(i)+ "\n" + reset();
+					cout << "Player busted" << endl;
+					return "Player busted\n" + reset();
 				}
 				// Else if the dealer busts, all the players that did not bust win.
 				else if (dealerBust) {
-					cout << "Dealer busted, player wins - player " << i << endl;
-					return "Dealer busted, player wins - player " + to_string(i)+ "\n" + reset();
+					cout << "Dealer busted, player wins" << endl;
+					return "Dealer busted, player wins\n" + reset();
 				}
 	}
 	// Function used for resetting the dealer hand, the player hands by looping through the player vector and rebuilding the deck so we don't run out of cards.

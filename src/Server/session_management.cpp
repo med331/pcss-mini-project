@@ -26,18 +26,19 @@ using namespace std;
 class ConnectionThread {
 private:
 
+//  Declaring all class variables
 	int playerID;
-	bool playerConnected = false;
 	char clientMessage[DEFAULT_BUFLEN];
 	SOCKET ClientSocket = -1;
 	int bytesReceived = 0;
-
+	bool playerConnected;
+// Sends input to client
 	int ClientMessage(string _sendInput) {
 		const char* _input=_sendInput.c_str();
 		bytesReceived = send(ClientSocket, _input, DEFAULT_BUFLEN, 0);
 		return bytesReceived;
 	}
-
+// Receives message from client
 	string ClientReceive() {
 		char* _input = new char[DEFAULT_BUFLEN];
 		bytesReceived = recv(ClientSocket, _input, DEFAULT_BUFLEN, 0);
@@ -48,73 +49,73 @@ private:
 public:
 	void operator() (SOCKET _ClientSocket);//the function used by the threads
 
-	int GetPlayerID() { //getters and setters for playerId
+//Getters and setters for playerId
+	int GetPlayerID() {
 		return playerID;
 	}
 
 	void SetPlayerID(int _playerID) {
 		playerID = _playerID;
 	}
-
+// Setter for ClientSocket
 	void SetClientSocket(SOCKET _clientSocket) {
 		ClientSocket = _clientSocket;
 	}
 
-	void SendMessageToAll(const char* _message);
 };
 
 
-class ConnectionManager { //Adds and removes players and manages their actions
+class ConnectionManager { //Adds and removes player and manages their actions
 
 private:
 
-	ConnectionThread connection; //Array of connections
+	ConnectionThread connection; //Connection
 	std::thread thread;
-
+// Winsock data
 	WSADATA wsaData;
 	int bytesReceived;
 
+// Address info
 	struct addrinfo* result = NULL;
 	struct addrinfo hints;
 
+// Sockets
 	SOCKET ListenSocket = -1;
 	SOCKET ClientTempSocket = -1;
 
-	int inputLength = DEFAULT_BUFLEN;
-
 public:
 
-	ConnectionManager() {} //Constructor
+	ConnectionManager() {} //Constructor for ConnectionManager
 
 	int ServerSetup()
 	{
-		WSAStartup(MAKEWORD(2, 2), &wsaData);
+		WSAStartup(MAKEWORD(2, 2), &wsaData); // Starts Winsock
 
 		ZeroMemory(&hints, sizeof(hints));
-		hints.ai_family = AF_INET;
+		hints.ai_family = AF_INET;             // Sets sockettype
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = AI_PASSIVE;
 
 		getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-		ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-		bind(ListenSocket, result->ai_addr, (int)result->ai_addrlen);
+		ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol); // Setup of listening socket
+		bind(ListenSocket, result->ai_addr, (int)result->ai_addrlen); // Binds socket to address
 		freeaddrinfo(result);
-		listen(ListenSocket, BACKLOG);
+		listen(ListenSocket, BACKLOG); // Starts listening
 		while (true) {
-			ClientTempSocket = accept(ListenSocket, NULL, NULL);
-			Subscribe(ClientTempSocket);
+			ClientTempSocket = accept(ListenSocket, NULL, NULL); // Waits for connection to be accepted
+			Subscribe(ClientTempSocket); // Adds player to game, using Subscribe function
 			printf("Player succesfully subscribed\n");
 		}
 	}
-
-	void Unsubscribe(SOCKET clientSocket) { //Removes players and exits the code
+    //Removes player and exits the program
+	void Unsubscribe(SOCKET clientSocket) {
 		closesocket(clientSocket);
 		thread=std::thread();
 		WSACleanup();
 		exit(0);
 	}
-
-	void Subscribe(SOCKET clientSocket) { //Adds players
+    //Adds player
+	void Subscribe(SOCKET clientSocket) {
 		thread = std::thread(connection, clientSocket);
 		thread.detach();
 	}
