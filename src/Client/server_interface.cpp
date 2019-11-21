@@ -9,7 +9,7 @@
 #include <string>
 #include <iostream>
 
-#define DEFAULT_BUFLEN 32
+#define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "80"
 
 #define DEFAULT_ADDRESS "127.0.0.1"
@@ -84,7 +84,7 @@ class ServerInterface
         {
             do {
                 recvbuf = new char[recvbuflen];
-                iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
+                iResult = recv(ConnectSocket, recvbuf, DEFAULT_BUFLEN, 0);
                 if ( iResult > 0 ){
                      printf("Bytes received: %d\n", iResult);
 
@@ -95,7 +95,7 @@ class ServerInterface
                 else
                     printf("recv failed with error: %d\n", WSAGetLastError());
 
-            } while( iResult < recvbuflen );
+            } while( iResult > 0 );
             return "";
         };
 

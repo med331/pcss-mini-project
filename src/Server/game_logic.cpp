@@ -15,6 +15,10 @@ public:
 	int maxPlayers = 4;
 	int playersInGame = 0;
 
+	int getMaxPlayer() {
+		return maxPlayers;
+	}
+
 	int getActivePlayer() {
 		return activePlayer;
 	}
@@ -54,22 +58,23 @@ public:
 
 	void updateGame() {
 		//Call functions based to update the game
+		cout << "gendeck" << endl;
 		genDeck();
+		cout << "shuffle" << endl;
 		shuffleDeck();
 	}
 
 	string makeMove(int playerID, bool action) {
 		//if (playerID == activePlayer) {
-		return "Margaritassss";
 			if (action == false) {
 				return stand(playerID);
-			} else {return "Margaritassss";}
+			} else {return hit(playerID);}
 		/*}
 		else {
 			cout << "it's not your turn";
 			return  "it's not your turn";
 		}*/
-		return "";
+		return "Making a move failed";
 	}
 	//Methed for adding players to the game uses find to acces an empty spot represented by the value 9 in the players vector "vec" and replaces it with a player id
 	void addPlayer(int playerID) {
@@ -87,6 +92,7 @@ public:
 					activePlayer = vec.at(it - vec.begin());
 					cout << "activePlayer is now " << activePlayer << endl;
 					activePlayerPos = 0;
+					//deal();
 				}
 			}
 			else
@@ -159,17 +165,17 @@ private:
 			activePlayerPos = 0;
 			activePlayer = vec.at(activePlayerPos);
 			cout << "round finished house turn " << endl;
-			doHouse();
-			for (int i = 0; i < 4; i++) {
+
+			/*for (int i = 0; i < 4; i++) {
 				if (vec.at(i) != 9) {
 					compare(i);
 				}
 			}
 			cout << "New round starting... " << endl;
 			reset();
-			deal();
+			deal();*/
 
-			return "Round ended house now draws ";
+			return "Round ended house now draws " + doHouse();;
 
 		}
 		if (vec.at(activePlayerPos) == 9){
@@ -192,32 +198,28 @@ private:
 
 	// Function used to "hit" a card, i.e. to add a card to the player hand.
 	string hit(int playerID) {
-			//pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
-			//cardCounter++;
+			pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
+			cardCounter++;
+			cout << "cardcount" << cardCounter << endl;
 			// check if the player has over 21, if they do they bust and can't hit anymore.
 			if (pHand[playerID] > 21) {
 				playerBust[playerID] = true;
 				cout << pHand[playerID] << "\n";
 				cout << "Player busted - player" << playerID;
-				nextPlayer();
-				return "Player " + to_string(playerID) + " has busted";
-				//"Player has over 21, player busted - player" + playerID;
+				return "Player has over 21, player busted - player" + to_string(playerID) + nextPlayer();
 			}
 			else if (!playerBust[playerID] && !dealerBust) {
 				cout << "Player " << playerID << " now has: " << pHand[playerID] << endl;
 				//return "Player now has: ";
 				//+ pHand[playerID];
-				return "Player now has "+pHand[playerID];
-			}
-			cout<<"It failed, but you still got.... you guessed it!"<<endl;
-			return "Margaritasss";
+				return "Player now has "+to_string(pHand[playerID]);
+			} else {return "Hit failed";}
 	}
 
 	string stand(int playerID) {
 		cout << "Player is standing with: " << pHand[playerID] << endl;
 		standing = false;
-		nextPlayer();
-		return "Player is standing with " + pHand[playerID];
+		return "Player is standing with " + pHand[playerID] + nextPlayer();;
 	}
 
 	// Function used to check if the dealer should stand, according to blackjack rules. If the dealer reaches 17, they have to stand.
@@ -261,25 +263,30 @@ private:
 				if (!playerBust[i] && !dealerBust) {
 					if (pHand[i] > dHand) {
 						cout << "Player wins - player "<< i << endl;
+						reset();
 						return "Player wins - player " + i;
 					}
 					else if (pHand[i] < dHand) {
 						cout << "Dealer wins" << endl;
+						reset();
 						return "Dealer wins against player " + i;
 					}
 					else if (pHand[i] == dHand) {
 						cout << "It's a tie " << endl;
+						reset();
 						return "It's a tie between dealer and player " + i;
 					}
 				}
 				// If the player busts, he autoloses.
 				else if (playerBust[i]) {
 					cout << "Player busted - player "<< i << endl;
+					reset();
 					return "Player busted - player " + i;
 				}
 				// Else if the dealer busts, all the players that did not bust win.
 				else if (dealerBust) {
 					cout << "Dealer busted, player wins - player " << i << endl;
+					reset();
 					return "Dealer busted, player wins - player " + i;
 				}
 	}

@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define DEFAULT_BUFLEN 32
+#define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "80"
 #define BACKLOG 100
 
@@ -147,7 +147,7 @@ public:
 		listen(ListenSocket, BACKLOG);
 		//printf("listening");
 		//printf("serverupdate starting\n");
-		GameSetup();
+		//GameSetup();
 		while (true) {
 			ClientTempSocket = accept(ListenSocket, NULL, NULL);
 			//printf("accepted\n");
