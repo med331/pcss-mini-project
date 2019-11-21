@@ -14,16 +14,12 @@ class game_logic {
 
 public:
 
-	bool standing = true;
+	bool standing = false;
 	int maxPlayers = 4;
 	int playersInGame = 0;
 
 	int getMaxPlayer() {
 		return maxPlayers;
-	}
-
-	int getActivePlayer() {
-		return activePlayer;
 	}
 
 	string getHouseStats() {
@@ -44,19 +40,13 @@ public:
 	// Deals at the start of the game, by looping through the players vector and hitting twice for the indexes in the vector that are not equal to 9 (we use 9 to mark an empty slot)
 	// Also adds a card to the dealer hand.
 	string deal() {
-		for (int i = 0; i <=3; i++) {
-			if (vec.at(i) != 9) {
-				hit(i);
-				hit(i);
-			}
-			else {
-				cout << "skipped" << i;
-			}
-		}
-		dHand = 0 + cardDeck[cardCounter];
-		cardCounter++;
-		cout << "Dealer now has: " << dHand << endl;
-		return "";
+
+        hit(0);
+        hit(0);
+
+		drawHouse();
+
+		return "Dealing out cards \n" + getplayerStats(0) + "\n" + "Dealer now has: " + to_string(dHand) + "\n";
 	}
 
 	void updateGame() {
@@ -95,7 +85,7 @@ public:
 					activePlayer = vec.at(it - vec.begin());
 					cout << "activePlayer is now " << activePlayer << endl;
 					activePlayerPos = 0;
-					//deal();
+
 				}
 			}
 			else
@@ -178,7 +168,7 @@ private:
 			reset();
 			deal();*/
 
-			return "Round ended house now draws " + doHouse();;
+			return "Round ended house now draws " + doHouse();
 
 		}
 		if (vec.at(activePlayerPos) == 9){
@@ -201,28 +191,28 @@ private:
 
 	// Function used to "hit" a card, i.e. to add a card to the player hand.
 	string hit(int playerID) {
-			pHand[playerID] = pHand[playerID] + cardDeck[cardCounter];
+			pHand[0] = pHand[0] + cardDeck[cardCounter];
 			cardCounter++;
-			cout << "cardcount" << cardCounter << endl;
 			// check if the player has over 21, if they do they bust and can't hit anymore.
 			if (pHand[playerID] > 21) {
 				playerBust[playerID] = true;
 				cout << pHand[playerID] << "\n";
 				cout << "Player busted - player" << playerID;
-				return "Player has over 21, player busted - player" + to_string(playerID) + nextPlayer();
+				standing = true;
+				return "Player has over 21, player busted - player" + to_string(playerID) + doHouse() + "\n";
 			}
 			else if (!playerBust[playerID] && !dealerBust) {
 				cout << "Player " << playerID << " now has: " << pHand[playerID] << endl;
 				//return "Player now has: ";
 				//+ pHand[playerID];
-				return "Player now has "+to_string(pHand[playerID]);
+				return "Player now has "+to_string(pHand[0]) + "\n";
 			} else {return "Hit failed";}
 	}
 
 	string stand(int playerID) {
 		cout << "Player is standing with: " << pHand[playerID] << endl;
-		standing = false;
-		return "Player is standing with " + pHand[playerID] + nextPlayer();;
+		standing = true;
+		return "Player is standing with " + to_string(pHand[0]) + "\n";
 	}
 
 	// Function used to check if the dealer should stand, according to blackjack rules. If the dealer reaches 17, they have to stand.
@@ -244,19 +234,19 @@ private:
 			dealerBust = true;
 			cout << "Dealer now has: " << dHand << endl;
 			cout << "Dealer Bust" << endl;
-			return "Dealer has over 21, dealer busts.";
+			return "Dealer has over 21, dealer busts. \n";
 		}
 		// If they didn't bust, check if they don't have over 16 (as they have to stand on 16).
 		if (!dealerBust) {
 			if (!houseStands()) {
 				cout << "Dealer now has: " << dHand << endl;
-				return "Dealer now has: " + dHand;
+				return "Dealer now has: " + to_string(dHand) + "\n";
 
 			}
 			else
 				cout << "Dealer now has: " << dHand << endl;
 				cout << "House has 17 or higher, house stands." << endl;
-				return "House has 17 or higher, house stands.";
+				return "Dealer has "+ to_string(dHand) +", house stands. \n";
 		}
 
 	}
@@ -266,49 +256,44 @@ private:
 				if (!playerBust[i] && !dealerBust) {
 					if (pHand[i] > dHand) {
 						cout << "Player wins - player "<< i << endl;
-						reset();
-						return "Player wins - player " + i;
+						return "Player wins - player " + to_string(i) + "\n" + reset();
 					}
 					else if (pHand[i] < dHand) {
 						cout << "Dealer wins" << endl;
-						reset();
-						return "Dealer wins against player " + i;
+						return "Dealer wins against player " + to_string(i)+ "\n" + reset();
 					}
 					else if (pHand[i] == dHand) {
 						cout << "It's a tie " << endl;
-						reset();
-						return "It's a tie between dealer and player " + i;
+						return "It's a tie between dealer and player " + to_string(i)+ "\n" + reset();
 					}
 				}
 				// If the player busts, he autoloses.
 				else if (playerBust[i]) {
 					cout << "Player busted - player "<< i << endl;
-					reset();
-					return "Player busted - player " + i ;
+					return "Player busted - player " + to_string(i)+ "\n" + reset();
 				}
 				// Else if the dealer busts, all the players that did not bust win.
 				else if (dealerBust) {
 					cout << "Dealer busted, player wins - player " << i << endl;
-					reset();
-					return "Dealer busted, player wins - player " + i;
+					return "Dealer busted, player wins - player " + to_string(i)+ "\n" + reset();
 				}
 	}
 	// Function used for resetting the dealer hand, the player hands by looping through the player vector and rebuilding the deck so we don't run out of cards.
-	void reset() {
-		for (int i = 0; i < 4; i++) {
-			if (vec.at(i) != 9) {
-				pHand[i] = 0;
-				playerBust[i] = 0;
-			}
-		}
-		dHand = 0;
-		dealerBust = 0;
-		genDeck();
-		shuffleDeck();
-		cardCounter = 0;
-		cout << "game resetting" << endl;
+    string reset() {
+        for (int i = 0; i < 4; i++) {
+            if (vec.at(i) != 9) {
+                pHand[i] = 0;
+                playerBust[i] = 0;
+            }
+        }
+        dHand = 0;
+        dealerBust = 0;
+        genDeck();
+        standing = false;
+        shuffleDeck();
+        cardCounter = 0;
+        return deal();
 	}
 };
-
 
 #endif // GAME_LOGIC_H_INCLUDED

@@ -10,18 +10,23 @@ int main()
 {
     ServerInterface server;
     server.connectToServer();
-
     bool isPlayerTurn = true;
+    string initmsg;
+    initmsg = server.recieveFromServer();
+    cout << initmsg << endl;
     while (true) {
-        printf("looping");
         if (true) {
             /* Get player input and send it to the server */
-            printf("can hitorstand\n");
+            printf("can hit or stand\n");
             isPlayerTurn = false;
             bool hitOrStand = PlayerHit();
             server.sendAction(hitOrStand);
             string response = server.recieveFromServer();
             cout<<response << endl;
+            if(hitOrStand == false){
+                response = server.recieveFromServer();
+                cout<<response << endl;
+            }
         }
         else {
             /* keep receiving messages and update isPlayerTurn if "your turn" message is received" */

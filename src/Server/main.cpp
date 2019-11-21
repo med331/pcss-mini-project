@@ -23,6 +23,7 @@ void ConnectionThread::operator()(SOCKET _ClientSocket) { //the function used by
            // printf("active player\n");
             //if(ClientMessage("your turn")>0) {
                 //printf("sent\n");
+                ClientMessage(game.deal());
                 while(true) {
                     input=ClientReceive();
                     if (bytesReceived>0){
@@ -36,9 +37,14 @@ void ConnectionThread::operator()(SOCKET _ClientSocket) { //the function used by
                             printf("sent hit\n");
                         } else {
                             string hitres = game.makeMove(0,false);
-                            ClientMessage(hitres);//manager.GetGameLogic().makeMove(0,false));
+                            ClientMessage(hitres);
+                            //manager.GetGameLogic().makeMove(0,false));
                             //manager.SendMessageToAll(manager.GetGameLogic().makeMove(0,false).c_str());
                             printf("sent stand\n");
+                        }
+                        if(game.standing == true){
+                           string hitres = game.doHouse();
+                            ClientMessage(hitres);
                         }
                         //cout<<"activePlayer: "<<manager.GetGameLogic().getActivePlayer()<<"\nthis player: "<<playerID<<endl;
                         //ClientMessage(manager.GetGameLogic().makeMove(playerID,true));
