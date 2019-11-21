@@ -15,12 +15,12 @@ class game_logic {
 public:
 
 	bool standing = false;
-	int maxPlayers = 4;
+	int maxPlayers = 1;
 	int playersInGame = 0;
 
-	int getMaxPlayer() {
+	/*int getMaxPlayer() {
 		return maxPlayers;
-	}
+	}*/
 
 	string getHouseStats() {
 		string bust = "";
@@ -33,44 +33,36 @@ public:
 		}
 		return string("Dealer has: ") + to_string(dHand) + string(" ") + bust + stands;
 	}
-	string getplayerStats(int playerId) {
-		return "Player " + to_string(playerId) + " Has " + to_string(pHand[playerId]);
+	string getplayerStats() {
+		return "Player Has " + to_string(pHand);
 	}
 
 	// Deals at the start of the game, by looping through the players vector and hitting twice for the indexes in the vector that are not equal to 9 (we use 9 to mark an empty slot)
 	// Also adds a card to the dealer hand.
 	string deal() {
 
-        hit(0);
-        hit(0);
+        hit();
+        hit();
 
 		drawHouse();
 
-		return "Dealing out cards \n" + getplayerStats(0) + "\n" + "Dealer now has: " + to_string(dHand) + "\n";
+		return "Dealing out cards \n" + getplayerStats() + "\n" + "Dealer now has: " + to_string(dHand) + "\n";
 	}
 
 	void updateGame() {
 		//Call functions based to update the game
-		cout << "gendeck" << endl;
 		genDeck();
-		cout << "shuffle" << endl;
 		shuffleDeck();
 	}
 
-	string makeMove(int playerID, bool action) {
-		//if (playerID == activePlayer) {
+	string makeMove(bool action) {
 			if (action == false) {
-				return stand(playerID);
-			} else {return hit(playerID);}
-		/*}
-		else {
-			cout << "it's not your turn";
-			return  "it's not your turn";
-		}*/
+				return stand();
+			} else {return hit();}
 		return "Making a move failed";
 	}
-	//Methed for adding players to the game uses find to acces an empty spot represented by the value 9 in the players vector "vec" and replaces it with a player id
-	void addPlayer(int playerID) {
+	//Method for adding players to the game uses find to acces an empty spot represented by the value 9 in the players vector "vec" and replaces it with a player id
+	void addPlayer() {
 		if (playersInGame != maxPlayers) {
 			playersInGame++;
 			vector<int>::iterator it;
@@ -78,12 +70,9 @@ public:
 			it = find(vec.begin(), vec.end(), ser);
 			if (it != vec.end())
 			{
-				cout << "Element " << ser << " found at position: ";
-				cout << it - vec.begin() + 1 << "\n";
-				vec.at(it - vec.begin()) = playerID;
+				vec.at(it - vec.begin()) = 0;
 				if (vec.at(it - vec.begin()) == 0) {
 					activePlayer = vec.at(it - vec.begin());
-					cout << "activePlayer is now " << activePlayer << endl;
 					activePlayerPos = 0;
 
 				}
@@ -92,20 +81,20 @@ public:
 				cout << "Element not found.\n\n";
 		}
 	}
+
 	//Reverse of the addPlayer method find specific player ids and changes them to the value 9
-	void removePlayer(int playerID) {
+	void removePlayer() {
 		vector<int>::iterator it;
-		int ser = playerID;
+		int ser = 0;
 		it = find(vec.begin(), vec.end(), ser);
 		if (it != vec.end())
 		{
-			cout << "Element " << ser << " found at position : ";
-			cout << it - vec.begin() + 1 << "\n";
 			vec.at(it - vec.begin()) = 9;
 		}
 		else
 			cout << "Element not found.\n\n";
 	}
+
 	string doHouse() {
 		string s;
 		bool c = false;
@@ -120,15 +109,15 @@ public:
 
 	}
 private:
-	vector<int> vec{ 9, 9, 9, 9 };
-	int pHand[4];
+	vector<int> vec{ 9};
+	int pHand;
 	int dHand = 0;
 	int cardCounter = 0;
 	int activePlayer;
 	int activePlayerPos;
 	int cardDeck[52];
 	int deckSize;
-	bool playerBust[4];
+	bool playerBust;
 	bool dealerBust = false;
 
 	//Draws for house until house stands or dealerbust is true this is intended to be run at the end of a round
@@ -150,38 +139,6 @@ private:
 			j++;
 		}
 	}
-	//Method for finding the next player in the vec vector skipping over empty player spots
-	string nextPlayer() {
-		activePlayerPos++;
-		cout << "CURRENT PLAYER: " << activePlayerPos << endl;
-		if (activePlayerPos > 3) {
-			activePlayerPos = 0;
-			activePlayer = vec.at(activePlayerPos);
-			cout << "round finished house turn " << endl;
-/*
-			for (int i = 0; i < 4; i++) {
-				if (vec.at(i) != 9) {
-					compare(i);
-				}
-			}
-			cout << "New round starting... " << endl;
-			reset();
-			deal();*/
-
-			return "Round ended house now draws " + doHouse();
-
-		}
-		if (vec.at(activePlayerPos) == 9){
-			nextPlayer();
-		}
-		else {
-			activePlayer = vec.at(activePlayerPos);
-			cout << "Next player " << activePlayer << endl;
-			cout << "Player has: " << pHand[activePlayer] << endl;
-			return "Next player " + activePlayer;
-		}
-
-	}
 
 	// Function used to shuffle the deck, using the random_shuffle method with a random seed based on the current time.
 	void shuffleDeck() {
@@ -190,29 +147,27 @@ private:
 	}
 
 	// Function used to "hit" a card, i.e. to add a card to the player hand.
-	string hit(int playerID) {
-			pHand[0] = pHand[0] + cardDeck[cardCounter];
+	string hit() {
+			pHand = pHand + cardDeck[cardCounter];
 			cardCounter++;
 			// check if the player has over 21, if they do they bust and can't hit anymore.
-			if (pHand[playerID] > 21) {
-				playerBust[playerID] = true;
-				cout << pHand[playerID] << "\n";
-				cout << "Player busted - player" << playerID;
+			if (pHand > 21) {
+				playerBust = true;
+				cout << pHand << "\n";
+				cout << "Player busted"<<endl;
 				standing = true;
-				return "Player has over 21, player busted - player" + to_string(playerID) + doHouse() + "\n";
+				return "Player has over 21, player busted" + doHouse() + "\n";
 			}
-			else if (!playerBust[playerID] && !dealerBust) {
-				cout << "Player " << playerID << " now has: " << pHand[playerID] << endl;
-				//return "Player now has: ";
-				//+ pHand[playerID];
-				return "Player now has "+to_string(pHand[0]) + "\n";
+			else if (!playerBust && !dealerBust) {
+				cout << "Player now has: " << pHand << endl;
+				return "Player now has "+to_string(pHand) + "\n";
 			} else {return "Hit failed";}
 	}
 
-	string stand(int playerID) {
-		cout << "Player is standing with: " << pHand[playerID] << endl;
+	string stand() {
+		cout << "Player is standing with: " << pHand << endl;
 		standing = true;
-		return "Player is standing with " + to_string(pHand[0]) + "\n";
+		return "Player is standing with " + to_string(pHand) + "\n";
 	}
 
 	// Function used to check if the dealer should stand, according to blackjack rules. If the dealer reaches 17, they have to stand.
@@ -253,22 +208,22 @@ private:
 	// Function used at the end of the round, in order to compare the player hands with the dealer hand and decide who wins.
 	string compare(int i) {
 				// First check if neither the dealer or the player busted, so only the comparison for the sum of the cards is done.
-				if (!playerBust[i] && !dealerBust) {
-					if (pHand[i] > dHand) {
+				if (!playerBust && !dealerBust) {
+					if (pHand > dHand) {
 						cout << "Player wins - player "<< i << endl;
 						return "Player wins - player " + to_string(i) + "\n" + reset();
 					}
-					else if (pHand[i] < dHand) {
+					else if (pHand < dHand) {
 						cout << "Dealer wins" << endl;
 						return "Dealer wins against player " + to_string(i)+ "\n" + reset();
 					}
-					else if (pHand[i] == dHand) {
+					else if (pHand == dHand) {
 						cout << "It's a tie " << endl;
 						return "It's a tie between dealer and player " + to_string(i)+ "\n" + reset();
 					}
 				}
 				// If the player busts, he autoloses.
-				else if (playerBust[i]) {
+				else if (playerBust) {
 					cout << "Player busted - player "<< i << endl;
 					return "Player busted - player " + to_string(i)+ "\n" + reset();
 				}
@@ -280,11 +235,9 @@ private:
 	}
 	// Function used for resetting the dealer hand, the player hands by looping through the player vector and rebuilding the deck so we don't run out of cards.
     string reset() {
-        for (int i = 0; i < 4; i++) {
-            if (vec.at(i) != 9) {
-                pHand[i] = 0;
-                playerBust[i] = 0;
-            }
+        if (vec.at(0) != 9) {
+            pHand = 0;
+            playerBust = 0;
         }
         dHand = 0;
         dealerBust = 0;

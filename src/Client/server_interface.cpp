@@ -43,26 +43,21 @@ class ServerInterface
         void connectToServer()
         {
             ptr=result;
-            //for(ptr=result; ptr != NULL ;ptr=ptr->ai_next) {
-                ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
-                    ptr->ai_protocol);
+            ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
+                ptr->ai_protocol);
 
-                iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-                if (iResult == -1) {
-                    closesocket(ConnectSocket);
-                    ConnectSocket = -1;
+            iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+            if (iResult == -1) {
+                closesocket(ConnectSocket);
+                ConnectSocket = -1;
 
-                }else{
-                    //break;
-                }
-            //}
+            }
             freeaddrinfo(result);
         };
 
         void sendToServer(const char *message)
         {
             iResult = send( ConnectSocket, message, (int)strlen(message), 0 );
-            printf("Bytes Sent: %d\n", iResult);
             cout << message << endl;
             /* REMEMBER to add check for message sent */
         };
@@ -86,9 +81,7 @@ class ServerInterface
                 recvbuf = new char[recvbuflen];
                 iResult = recv(ConnectSocket, recvbuf, DEFAULT_BUFLEN, 0);
                 if ( iResult > 0 ){
-                     printf("Bytes received: %d\n", iResult);
-
-                    return recvbuf; /* change this */
+                    return recvbuf;
                 }
                 else if ( iResult == 0 )
                     printf("Connection closed\n");

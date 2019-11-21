@@ -8,61 +8,50 @@
 using namespace std;
 
 ConnectionManager manager;
-game_logic game;
+game_logic game; //State of the game
+
 void ConnectionThread::operator()(SOCKET _ClientSocket) { //the function used by the threads
     ClientSocket = _ClientSocket;
     game.updateGame();
-    game.addPlayer(playerID);
+    game.addPlayer();
     playerConnected = true;
     string input="";
     string output="";
-    //recv(ClientSocket, NULL, DEFAULT_BUFLEN, 0);
     if(playerConnected) {
-       // printf("connected\n");
-        //if(playerID==manager.game.getActivePlayer()) {
-           // printf("active player\n");
-            //if(ClientMessage("your turn")>0) {
-                //printf("sent\n");
-                ClientMessage(game.deal());
-                while(true) {
-                    input=ClientReceive();
-                    if (bytesReceived>0){
-                        printf("received\n");
-                        cout<<"bytes: "<<bytesReceived<<endl;
-                        cout<<"input: "<<input<<endl;
-                        if(bytesReceived==3) {
-                                string hitres = game.makeMove(0,true);
-                            ClientMessage(hitres);//manager.GetGameLogic().makeMove(0,true));
-                            //manager.SendMessageToAll(manager.GetGameLogic().makeMove(0,true).c_str());
-                            printf("sent hit\n");
-                        } else {
-                            string hitres = game.makeMove(0,false);
-                            ClientMessage(hitres);
-                            //manager.GetGameLogic().makeMove(0,false));
-                            //manager.SendMessageToAll(manager.GetGameLogic().makeMove(0,false).c_str());
-                            printf("sent stand\n");
-                        }
-                        if(game.standing == true){
-                           string hitres = game.doHouse();
-                            ClientMessage(hitres);
-                        }
-                        //cout<<"activePlayer: "<<manager.GetGameLogic().getActivePlayer()<<"\nthis player: "<<playerID<<endl;
-                        //ClientMessage(manager.GetGameLogic().makeMove(playerID,true));
-                        input="";
-                        output="";
-                    }
+        ClientMessage(game.deal());
+        while(true) {
+            input=ClientReceive();
+            if (bytesReceived>0){
+                printf("Input received\n");
+                if(bytesReceived==3) {
+                    string hitres = game.makeMove(true);
+                    ClientMessage(hitres);
+                    //printf("sent hit\n");
+                } else {
+                    string hitres = game.makeMove(false);
+                    ClientMessage(hitres);
+                    //printf("sent stand\n");
                 }
-            //}
-        //}
+                if(game.standing == true){
+                   string hitres = game.doHouse();
+                    ClientMessage(hitres);
+                }
+                input="";
+                output="";
+            } else {
+                printf("Player disconnected");
+                manager.Unsubscribe(ClientSocket);
+                ClientSocket=-1;
+                game.removePlayer();
+                break;
+            }
+        }
     }
 }
 
 int main()
 {
-    //ConnectionManager manager;
     manager.ServerSetup();
-    //object.updateGame();
-    //manager.ServerUpdate();
     return 0;
 }
 

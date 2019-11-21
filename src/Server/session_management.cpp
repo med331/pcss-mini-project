@@ -1,6 +1,3 @@
-//class ConnectionManager(){
-//private GameState currentGamestate=new GameState()
-//
 #undef UNICODE
 
 #define WIN32_LEAN_AND_MEAN
@@ -19,7 +16,7 @@
 
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "80"
-#define BACKLOG 100
+#define BACKLOG 10
 
 #include "game_logic.h"
 
@@ -27,7 +24,7 @@ using namespace std;
 
 
 class ConnectionThread {
-public: //reset to private
+private:
 
 	int playerID;
 	bool playerConnected = false;
@@ -36,31 +33,20 @@ public: //reset to private
 	int bytesReceived = 0;
 
 	int ClientMessage(string _sendInput) {
-		//if(playerConnected) {
 		const char* _input=_sendInput.c_str();
 		bytesReceived = send(ClientSocket, _input, DEFAULT_BUFLEN, 0);
-        cout << "Sent " << bytesReceived << " bytes" << endl;
-		cout << "output: " << _input << endl;
 		return bytesReceived;
-		//}
 	}
 
 	string ClientReceive() {
 		char* _input = new char[DEFAULT_BUFLEN];
-		//if(playerConnected) {
 		bytesReceived = recv(ClientSocket, _input, DEFAULT_BUFLEN, 0);
 		return _input;
-		//}
 	}
 
 
 public:
 	void operator() (SOCKET _ClientSocket);//the function used by the threads
-
-	void EndThread() {} //Ends the current thread
-
-
-
 
 	int GetPlayerID() { //getters and setters for playerId
 		return playerID;
@@ -70,28 +56,8 @@ public:
 		playerID = _playerID;
 	}
 
-	/*void SetGameReference(game_logic _gameRef) {
-		gameReference=_gameRef;
-	}*/
-
-	bool GetPlayerConnected() { //getters and setters for playerId
-		return playerConnected;
-	}
-
-	void SetPlayerConnected(bool _playerConnected) {
-		playerConnected = _playerConnected;
-	}
-
-	SOCKET GetClientSocket() { //getters and setters for playerId
-		return ClientSocket;
-	}
-
 	void SetClientSocket(SOCKET _clientSocket) {
 		ClientSocket = _clientSocket;
-	}
-
-	void NextTurn() {
-
 	}
 
 	void SendMessageToAll(const char* _message);
@@ -100,12 +66,10 @@ public:
 
 class ConnectionManager { //Adds and removes players and manages their actions
 
-private: //reset to private
+private:
 
-	int playerAmount = 0;
-
-	ConnectionThread connectionArray[1]; //Array of connections
-	std::thread threadArray[1];
+	ConnectionThread connection; //Array of connections
+	std::thread thread;
 
 	WSADATA wsaData;
 	int bytesReceived;
@@ -120,14 +84,7 @@ private: //reset to private
 
 public:
 
-	game_logic game; //State of the game
-	ConnectionManager() { //Constructor
-		for (int i = 0; i < 1; i++) {
-			connectionArray[i].SetPlayerID(i);
-			//connectionArray[i].SetGameReference(game);
-		}
-		//ServerSetup();
-	}
+	ConnectionManager() {} //Constructor
 
 	int ServerSetup()
 	{
@@ -139,142 +96,26 @@ public:
 		hints.ai_flags = AI_PASSIVE;
 
 		getaddrinfo(NULL, DEFAULT_PORT, &hints, &result);
-		//printf("joining");
 		ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-		//printf("binding");
 		bind(ListenSocket, result->ai_addr, (int)result->ai_addrlen);
 		freeaddrinfo(result);
 		listen(ListenSocket, BACKLOG);
-		//printf("listening");
-		//printf("serverupdate starting\n");
-		//GameSetup();
 		while (true) {
 			ClientTempSocket = accept(ListenSocket, NULL, NULL);
-			//printf("accepted\n");
-			Subscribe(playerAmount, ClientTempSocket);
-			//printf("succesfully subscribed\n");
-			//SendMessageToAll((const char*)"fun");
+			Subscribe(ClientTempSocket);
+			printf("Player succesfully subscribed\n");
 		}
 	}
 
-	void GameSetup() {
-		game.updateGame();
-	}
-
-	/*void GameUpdate(char hitOrStandInput[DEFAULT_BUFLEN]) {
-		//Send current player prompt
-		connectionArray[0].ClientMessage("It is your turn");
-		//send( connectionArray[game.getActivePlayer()].GetClientSocket(), "It is your turn", 15, 0 );
-		//Take input from current player
-		//bytesReceived = recv(connectionArray[0].GetClientSocket(), hitOrStandInput, DEFAULT_BUFLEN, 0);
-		std::cout<<hitOrStandInput<<endl;
-		/*if (bytesReceived > 0) {
-			if(hitOrStandInput=="hit") {
-				SendMessageToAll(game.makeMove(0,true).c_str());
-			} else {
-				SendMessageToAll(game.makeMove(0,false).c_str());
-			}
-			/*cout<<bytesReceived<<endl;
-			int byteSend=
-			//send(ClientSocket[activePlayer],output,strlen(output),0);
-			//cout<<byteSend<<endl;
-			cout<<hitOrStandInput<<endl;
-		}
-		else if (bytesReceived == 0) {
-			//printf("Connection closing...\n");
-			//Unsubscribe(game.getActivePlayer());
-		}
-	}*/
-
-	void Unsubscribe(int playerID) {
-		connectionArray[playerID].EndThread();
-		closesocket(connectionArray[playerID].GetClientSocket());
-		game.removePlayer(playerID);
-		playerAmount--;
-	} //Removes players
-
-	void Subscribe(int playerID, SOCKET clientSocket) { //Adds players
-		threadArray[playerID] = std::thread(connectionArray[playerID], clientSocket);
-		threadArray[playerID].detach();
-		game.addPlayer(playerID);
-		playerAmount++;
-	}
-
-	void ServerClose() {
+	void Unsubscribe(SOCKET clientSocket) { //Removes players and exits the code
+		closesocket(clientSocket);
+		thread=std::thread();
 		WSACleanup();
+		exit(0);
 	}
 
-	void SendMessageToAll(const char* message) {
-		for (int i = 0; i < 1; i++) {
-			if (connectionArray[i].GetPlayerConnected()) {
-				connectionArray[i].ClientMessage(message);
-			}
-		}
-	}
-
-	game_logic GetGameLogic() {
-		return game;
+	void Subscribe(SOCKET clientSocket) { //Adds players
+		thread = std::thread(connection, clientSocket);
+		thread.detach();
 	}
 };
-
-
-
-/*void ConnectionThread::SendMessageToAll(const char* _message) {
-		for(int i=0;i<4;i++) {
-			if(connectionArray[i].GetPlayerConnected()) {
-				connectionArray[i].ClientMessage(_message);
-			}
-		}
-	}*/
-
-
-	/*class ConnectionThread {
-	private: //variables
-		int playerID;
-		bool playerConnected=false;
-		bool isListening=false;
-		string clientMessage;
-		static ListenSocket=-1;
-		SOCKET ClientSocket=-1;
-	public:
-		void operator() () const { //the function used by the threads
-			while(true) {
-				if(doSendMessage && playerConnected) {
-					send( ClientSocket[playerID], clientMessage, strlen(message), 0 );
-					doSendMessage=false;
-				}
-			}
-		}
-		void EndThread () {} //Ends the current thread
-		void ClientMessage(char* input) {
-			doSendMessage=true;
-			clientMessage=input;
-		}
-		void ListenSocketReset() {
-		}
-		int GetPlayerID() { //getters and setters for playerId
-			return playerID;
-		}
-		void SetPlayerID(int _playerID) {
-			playerID=_playerID;
-		}
-		bool GetPlayerConnected() { //getters and setters for playerId
-			return playerConnected;
-		}
-		void SetPlayerConnected(bool _playerConnected) {
-			playerConnected=_playerConnected;
-		}
-	};*/
-
-	/*class ConnectionAcceptThread {
-		void operator() () const { //the function used by the threads
-			ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-			bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
-			freeaddrinfo(result);
-			listen(ListenSocket, BACKLOG);
-			ClientSocket = accept(ListenSocket, NULL, NULL);
-			for(int i=0;i<ConnectionManager.maxPlayers;i++) {
-				ConnectionManager
-			}
-		}
-	};*/

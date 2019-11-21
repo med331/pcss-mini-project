@@ -2,7 +2,7 @@
 
 using namespace std;
 
-bool PlayerJoin (){
+/*bool PlayerJoin (){
     cout<<"Do you want to join a game??"<<endl;
     cout<<"[Y]es or [N]o"<<endl;
     string input;
@@ -11,9 +11,9 @@ bool PlayerJoin (){
     if(input=="Y"||input=="y") {
         return true;
     } else {
-        return true; /* kekw */
+        return true; /* kekw
     }
-}
+}*/
 
 bool PlayerHit (){
     cout<<"Do you wish to [H]it or [S]tand?"<<endl;
