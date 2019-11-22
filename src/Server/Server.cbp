@@ -32,25 +32,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-<<<<<<< Updated upstream
-		<Unit filename="Server.cbp" />
 		<Unit filename="Server.layout" />
-		<Unit filename="client_interface.cpp" />
 		<Unit filename="game_logic.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="session_management.cpp" />
-=======
-		<Unit filename="client_interface.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="game_logic.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="main.cpp" />
-		<Unit filename="session_management.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
->>>>>>> Stashed changes
 		<Extensions>
 			<code_completion />
 			<envvars />
